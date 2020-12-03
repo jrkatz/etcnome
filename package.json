@@ -1,0 +1,28 @@
+{
+  "name": "electronome",
+  "version": "0.0.1",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "description": "programmable metronome",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrkatz/electronome.git"
+  },
+  "keywords": [
+    "programmable",
+    "metronome",
+    "electron",
+    "electronome"
+  ],
+  "author": "Jacob Katz",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/jrkatz/electronome/issues"
+  },
+  "homepage": "https://github.com/jrkatz/electronome#readme",
+  "devDependencies": {
+    "electron": "^11.0.3"
+  }
+}

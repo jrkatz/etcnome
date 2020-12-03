@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/jrkatz/electronome#readme",
   "devDependencies": {
-    "electron": "^11.0.3"
+    "electron": "^11.0.3",
+    "prettier": "2.2.1"
   }
 }

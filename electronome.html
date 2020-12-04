@@ -10,6 +10,22 @@
   </head>
   <body>
     <h1>Electronome</h1>
-    <script src="./noises/play-noise.js" type="module"></script>
+    <button id="playPause"></button>
+    <button id="stop"></button>
+    <script src="./controls/controls.js" type="module"></script>
+    <script type="text/javascript">
+      function onElectronomeLoad() {
+        window.electronome.bindControls(
+          document.getElementById("playPause"),
+          document.getElementById("stop")
+        );
+      }
+
+      if (typeof window.electronome === "undefined") {
+        window.electronome = [onElectronomeLoad];
+      } else if (!Array.isArray(window.electronome)) {
+        onElectronomeLoad();
+      }
+    </script>
   </body>
 </html>

@@ -14,11 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// TODO set up packages and such so I can import w/out extensions,
-// or change eslint rules. One or the other.
-// eslint-disable-next-line import/extensions
 import Track from "../player/track.js";
-// eslint-disable-next-line import/extensions
 import Player, { State } from "../player/player.js";
 
 class Controls {

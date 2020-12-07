@@ -17,6 +17,17 @@
       "ForInStatement",
       "LabeledStatement",
       "WithStatement"
+    ],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "ts": "never",
+        "tsx": "never",
+        "jsx": "never",
+        "mjs": "never"
+      }
     ]
-  }
+  },
+  "reportUnusedDisableDirectives": true
 }

@@ -17,7 +17,6 @@
 // This should probably be extracted to an interface later to ease infinite play at a steady beat
 // effectively a generator of scheduled audio buffer source nodes
 
-// eslint-disable-next-line import/extensions
 import Click from "../noises/click.js";
 
 const clickHigh = Click(1000, 0.2, 0.03, 44100);

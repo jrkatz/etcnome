@@ -16,9 +16,6 @@
 
 // a click is a mix between a beep and white noise.... I guess
 
-// TODO set up packages and such so I can import w/out extensions,
-// or change eslint rules. One or the other.
-// eslint-disable-next-line import/extensions
 import WhiteNoise from "./white-noise.js";
 
 // for this click, we're going to:

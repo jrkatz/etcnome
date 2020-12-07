@@ -18,6 +18,7 @@
 // effectively a generator of scheduled audio buffer source nodes
 
 import Click from "../noises/click.js";
+import Beat from "./beat.js";
 
 const clickHigh = Click(1000, 0.2, 0.03, 44100);
 const clickLow = Click(440, 0.2, 0.03, 44100);
@@ -29,13 +30,7 @@ class Track extends EventTarget {
     this.period = 60 / this.bpm;
     this.sounds = [clickHigh, clickLow];
 
-    this.firstBeat = () => ({
-      time: 0,
-      buffer: clickHigh,
-      meta: {
-        count: 0,
-      },
-    });
+    this.firstBeat = new Beat(0, this.period, clickHigh, this, { count: 0 });
   }
 
   ready() {
@@ -44,22 +39,20 @@ class Track extends EventTarget {
 
   nextBeat(prevBeat) {
     if (!prevBeat) {
-      return this.firstBeat();
+      return this.firstBeat;
     }
 
-    const prevCount = prevBeat.meta.count;
-    const { time: prevTime } = prevBeat;
+    const meta = prevBeat.getMeta(this, { count: 0 });
+
+    const prevCount = meta.count;
+    const { time: prevTime, duration: prevDuration } = prevBeat;
 
     const count = (prevCount + 1) % 4;
-    const time = prevTime + this.period;
+    const time = prevTime + prevDuration;
 
     const buffer = count === 0 ? clickHigh : clickLow;
 
-    return {
-      time,
-      buffer,
-      meta: { count },
-    };
+    return new Beat(time, this.period, buffer, this, { count });
   }
 }
 

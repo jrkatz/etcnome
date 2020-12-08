@@ -15,8 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 class Beat {
-  constructor(time, duration, buffer, owner, meta) {
-    this.time = time;
+  constructor(duration, buffer, owner, meta) {
     this.duration = duration;
     this.buffer = buffer;
 

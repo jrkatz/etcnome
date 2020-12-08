@@ -15,13 +15,13 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 // When play control is exercised:
-// - If there is no running audio context, a new one is created and the track played through it.
+// - If there is no running audio context, a new one is created and the section played through it.
 // - If there is a running audio context, it is resumed.
 // The play button is then transformed into a pause button.
 //
 // When the pause control is exercised, the audio context is suspended.
 // When the stop button is exercised, the audio context is discarded.
-// When the track ends, the audio context is discarded.
+// When the section ends, the audio context is discarded.
 
 // TODO what are js best practices w/r/t enum-like values?
 // Should the values be 'new Object()' so they aren't
@@ -33,15 +33,25 @@ export const State = {
 };
 
 class Player extends EventTarget {
-  constructor(track) {
+  constructor() {
     super();
+    this.section = null;
+    this.state = State.stopped;
+    this.reset();
+  }
+
+  setTrack(section) {
+    this.section = section;
+    this.reset();
+  }
+
+  reset(audioCtx) {
     this.queued = 0;
+    this.audioCtx?.suspend();
+    this.audioCtx = audioCtx;
     this.lastBeat = null;
     this.nextTime = 0;
     this.lastSource = null;
-    this.track = track;
-    this.state = State.stopped;
-    this.audioCtx = null;
   }
 
   messageState(state) {
@@ -59,8 +69,7 @@ class Player extends EventTarget {
 
   stop() {
     this.changeState(State.stopped, () => {
-      this.audioCtx.suspend();
-      this.audioCtx = null;
+      this.reset();
     });
   }
 
@@ -69,12 +78,8 @@ class Player extends EventTarget {
       if (this.audioCtx) {
         this.audioCtx.resume();
       } else {
-        this.audioCtx = new window.AudioContext();
-        this.nextTime = 0;
-        this.queued = 0;
-        this.lastBeat = null;
-        this.lastSource = null;
-        this.track.ready().then(this.queue.bind(this));
+        this.reset(new AudioContext());
+        this.section.ready().then(this.queue.bind(this));
       }
     });
   }
@@ -87,7 +92,7 @@ class Player extends EventTarget {
 
   queue() {
     while (this.queued < 2) {
-      const nextBeat = this.track.nextBeat(this.lastBeat);
+      const nextBeat = this.section?.nextBeat(this.lastBeat) || null;
       if (nextBeat === null) {
         // the last beat has already played
         if (this.queued === 0) {
@@ -96,7 +101,7 @@ class Player extends EventTarget {
         else if (this.lastSource !== null) {
           this.lastSource.addEventListener("ended", this.stop.bind(this));
         } else {
-          // there was never a beat (empty track). Just stop anyhow.
+          // there was never a beat (empty section). Just stop anyhow.
           this.stop();
         }
         return;
@@ -108,7 +113,7 @@ class Player extends EventTarget {
       const time = this.nextTime;
       this.nextTime += nextBeat.duration;
       buffer.then((buf) => {
-        const nextSource = new window.AudioBufferSourceNode(this.audioCtx, {
+        const nextSource = new AudioBufferSourceNode(this.audioCtx, {
           buffer: buf,
         });
         this.lastSource = nextSource;

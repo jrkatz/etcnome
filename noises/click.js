@@ -35,7 +35,7 @@ import WhiteNoise from "./white-noise.js";
 const click = (frequency, duration, attack, sampleRate) => {
   const length = duration * sampleRate;
 
-  const audioCtx = new window.OfflineAudioContext({
+  const audioCtx = new OfflineAudioContext({
     numberOfChannels: 1,
     length,
     sampleRate,
@@ -46,7 +46,7 @@ const click = (frequency, duration, attack, sampleRate) => {
   const whiteNoiseSource = audioCtx.createBufferSource();
   whiteNoiseSource.buffer = whiteNoise;
   whiteNoiseSource.start();
-  const tone = new window.OscillatorNode(audioCtx, { frequency });
+  const tone = new OscillatorNode(audioCtx, { frequency });
 
   const whiteNoiseEnvelope = audioCtx.createGain();
   // control the gain with the tone. Why not?

@@ -26,11 +26,16 @@ class Beat {
   }
 
   getMeta(owner, defaultVal) {
-    const existing = this.metaMap.get(owner);
-    if (existing) {
-      return existing;
+    // falsey values like 0 kill the opportunity
+    // to use fewer lookups here. Oh well.
+    if (this.metaMap.has(owner)) {
+      return this.metaMap.get(owner);
     }
     return defaultVal;
+  }
+
+  hasMeta(owner) {
+    return this.metaMap.has(owner);
   }
 
   setMeta(owner, meta) {

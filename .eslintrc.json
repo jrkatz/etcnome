@@ -18,6 +18,7 @@
       "LabeledStatement",
       "WithStatement"
     ],
+    "max-classes-per-file": "off",
     "import/extensions": [
       "error",
       "ignorePackages",

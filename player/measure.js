@@ -14,27 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-// This should probably be extracted to an interface later to ease infinite play at a steady beat
-// effectively a generator of scheduled audio buffer source nodes
+// A Section provides a nextBeat function to derive the next beat
+// from the previous beat. Sections must be extended to provide
+// anything useful.
+// Sections can be composed using the RepeatingSection or SectionList
+// classes, which also extend Section.
 
+import { Section } from "./section.js";
 import Click from "../noises/click.js";
 import Beat from "./beat.js";
 
 const clickHigh = Click(1000, 0.2, 0.03, 44100);
 const clickLow = Click(440, 0.2, 0.03, 44100);
 
-class Track extends EventTarget {
-  constructor() {
-    super();
-    this.bpm = 140;
-    this.period = 60 / this.bpm;
-    this.sounds = [clickHigh, clickLow];
+class Measure extends Section {
+  constructor(bpm, count) {
+    super([clickHigh, clickLow]);
+    this.beatDuration = 60 / bpm;
+    this.count = count;
 
-    this.firstBeat = new Beat(this.period, clickHigh, this, { count: 0 });
-  }
-
-  ready() {
-    return Promise.all(this.sounds);
+    this.firstBeat = new Beat(this.beatDuration, clickHigh, this, 0);
   }
 
   nextBeat(prevBeat) {
@@ -42,15 +41,14 @@ class Track extends EventTarget {
       return this.firstBeat;
     }
 
-    const meta = prevBeat.getMeta(this, { count: 0 });
-    const count = meta.count + 1;
-    if (count >= 8) {
+    const count = prevBeat.getMeta(this, 0) + 1;
+    // TODO better names, please.
+    if (count >= this.count) {
       return null;
     }
 
-    const buffer = count % 4 === 0 ? clickHigh : clickLow;
-    return new Beat(this.period, buffer, this, { count });
+    const beat = new Beat(this.beatDuration, clickLow, this, count);
+    return beat;
   }
 }
-
-export default Track;
+export default Measure;

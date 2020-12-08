@@ -42,9 +42,6 @@ class Player extends EventTarget {
     this.track = track;
     this.state = State.stopped;
     this.audioCtx = null;
-    // Always stop when the track ends.
-    // This can be extended later with configuration to repeat and the like.
-    this.track.addEventListener("ended", this.stop);
   }
 
   messageState(state) {

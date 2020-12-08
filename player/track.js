@@ -30,7 +30,7 @@ class Track extends EventTarget {
     this.period = 60 / this.bpm;
     this.sounds = [clickHigh, clickLow];
 
-    this.firstBeat = new Beat(0, this.period, clickHigh, this, { count: 0 });
+    this.firstBeat = new Beat(this.period, clickHigh, this, { count: 0 });
   }
 
   ready() {
@@ -48,13 +48,8 @@ class Track extends EventTarget {
       return null;
     }
 
-    const { time: prevTime, duration: prevDuration } = prevBeat;
-
-    const time = prevTime + prevDuration;
-
     const buffer = count % 4 === 0 ? clickHigh : clickLow;
-
-    return new Beat(time, this.period, buffer, this, { count });
+    return new Beat(this.period, buffer, this, { count });
   }
 }
 

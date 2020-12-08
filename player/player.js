@@ -37,6 +37,7 @@ class Player extends EventTarget {
     super();
     this.queued = 0;
     this.lastBeat = null;
+    this.nextTime = 0;
     this.lastSource = null;
     this.track = track;
     this.state = State.stopped;
@@ -72,6 +73,7 @@ class Player extends EventTarget {
         this.audioCtx.resume();
       } else {
         this.audioCtx = new window.AudioContext();
+        this.nextTime = 0;
         this.queued = 0;
         this.lastBeat = null;
         this.lastSource = null;
@@ -103,9 +105,11 @@ class Player extends EventTarget {
         return;
       }
       this.lastBeat = nextBeat;
-      const { buffer, time } = nextBeat;
+      const { buffer } = nextBeat;
       this.queued += 1;
 
+      const time = this.nextTime;
+      this.nextTime += nextBeat.duration;
       buffer.then((buf) => {
         const nextSource = new window.AudioBufferSourceNode(this.audioCtx, {
           buffer: buf,

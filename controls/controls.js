@@ -16,71 +16,8 @@
 
 import { RepeatingSection, SectionList } from "../player/section.js";
 import Measure from "../player/measure.js";
-import Player, { State } from "../player/player.js";
-
-class Controls {
-  constructor(playPauseBtn, stopBtn, player) {
-    this.ppb = null;
-    this.stb = null;
-    this.player = player;
-  }
-
-  init(playPauseBtn, stopBtn, player) {
-    this.ppb = playPauseBtn;
-    this.stb = stopBtn;
-    this.player = player;
-    player.addEventListener("stateChange", (e) => this.toState(e.detail));
-    this.toState(player.state);
-  }
-
-  stopEnabled() {
-    this.stb.disabled = false;
-    this.stb.innerText = "⏹";
-    this.stb.onclick = this.player.stop.bind(this.player);
-  }
-
-  stopDisabled() {
-    this.stb.disabled = true;
-    this.stb.innerText = "⏹";
-    this.stb.onclick = null;
-  }
-
-  playEnabled() {
-    this.ppb.innerText = "▶️";
-    this.ppb.onclick = this.player.play.bind(this.player);
-  }
-
-  pauseEnabled() {
-    this.ppb.innerText = "⏸";
-    this.ppb.onclick = this.player.pause.bind(this.player);
-  }
-
-  controlsStopped() {
-    this.player.stop();
-    this.playEnabled();
-    this.stopDisabled();
-  }
-
-  controlsPlaying() {
-    this.pauseEnabled();
-    this.stopEnabled();
-  }
-
-  controlsPaused() {
-    this.stopEnabled();
-    this.playEnabled();
-  }
-
-  toState(state) {
-    if (state === State.playing) {
-      this.controlsPlaying();
-    } else if (state === State.paused) {
-      this.controlsPaused();
-    } else {
-      this.controlsStopped();
-    }
-  }
-}
+import Player from "../player/player.js";
+import Transport from "./transport.js";
 
 const reusedMeasure = new Measure(200, 5);
 const track = new SectionList([
@@ -91,10 +28,10 @@ const track = new SectionList([
 ]);
 
 const bindControls = (playPauseBtn, stopBtn) => {
-  const controls = new Controls();
+  const transport = new Transport();
   const player = new Player();
   player.setTrack(track);
-  controls.init(playPauseBtn, stopBtn, player);
+  transport.init(playPauseBtn, stopBtn, player);
 };
 
 if (window) {

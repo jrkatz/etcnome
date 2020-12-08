@@ -14,24 +14,26 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { RepeatingSection, SectionList } from "../../lib/player/section.js";
-import Measure from "../../lib/player/measure.js";
+import Interpreter from "../../lib/interpreter/interpreter.js";
 import Player from "../../lib/player/player.js";
 import Transport from "./transport.js";
+import Editor from "./editor.js";
 
-const reusedMeasure = new Measure(200, 5);
-const track = new SectionList([
-  new Measure(120, 4),
-  new RepeatingSection(new Measure(100, 3), 2),
-  reusedMeasure,
-  reusedMeasure,
-]);
-
-const bindControls = (playPauseBtn, stopBtn) => {
+const bindControls = (
+  playPauseBtn,
+  stopBtn,
+  editorFld,
+  editorErrors,
+  editorBtn,
+  parser
+) => {
   const transport = new Transport();
   const player = new Player();
-  player.setTrack(track);
+  const editor = new Editor(new Interpreter(parser));
+  editor.addEventListener("trackChange", (e) => player.setTrack(e.detail));
+
   transport.init(playPauseBtn, stopBtn, player);
+  editor.init(editorFld, editorErrors, editorBtn);
 };
 
 if (window) {

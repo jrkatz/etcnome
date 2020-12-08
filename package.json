@@ -3,6 +3,7 @@
   "version": "0.0.3",
   "main": "main.js",
   "scripts": {
+    "prestart": "[ -d gen ] || mkdir gen; npx jison parser.jison; mv parser.js gen",
     "start": "electron ."
   },
   "description": "programmable metronome",
@@ -29,6 +30,7 @@
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.22.1",
     "husky": "^4.3.0",
+    "jison": "^0.4.18",
     "lint-staged": "^10.5.2",
     "prettier": "2.2.1"
   },

@@ -82,21 +82,19 @@ class Controls {
   }
 }
 
+const reusedMeasure = new Measure(200, 5);
+const track = new SectionList([
+  new Measure(120, 4),
+  new RepeatingSection(new Measure(100, 3), 2),
+  reusedMeasure,
+  reusedMeasure,
+]);
+
 const bindControls = (playPauseBtn, stopBtn) => {
   const controls = new Controls();
-  const reusedMeasure = new Measure(200, 5);
-  controls.init(
-    playPauseBtn,
-    stopBtn,
-    new Player(
-      new SectionList([
-        new Measure(120, 4),
-        new RepeatingSection(new Measure(100, 3), 2),
-        reusedMeasure,
-        reusedMeasure,
-      ])
-    )
-  );
+  const player = new Player();
+  player.setTrack(track);
+  controls.init(playPauseBtn, stopBtn, player);
 };
 
 if (window) {

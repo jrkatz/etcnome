@@ -18,19 +18,39 @@
 
 import WhiteNoise from "./white-noise.js";
 
-// for this click, we're going to:
-// 1. shape white noise with a sine wave
-// 2. shape _that_ with an attack and release
-// 3. save that to a buffer.
-// 4. export the buffer.
+const attackRelease = (audioCtx, source, attackTime, duration, start = 0) => {
+  const envelope = audioCtx.createGain();
+  const { gain } = envelope;
+  gain.setValueAtTime(start, 0);
+  gain.exponentialRampToValueAtTime(1, attackTime + start);
+  gain.exponentialRampToValueAtTime(0.0001, duration - (attackTime + start));
+  source.connect(envelope);
+  return envelope;
+};
 
-// I think this comes out more low-pass filter than anything else.
-// TODO look into how vocoders work, do _that_ to apply the pitch
-// to the white noise.
+const normalize = (buffer) => {
+  // pretend we did anything.
+  let max = 0;
+  for (let i = 0; i < buffer.numberOfChannels; i += 1) {
+    const channel = buffer.getChannelData(i);
+    max = Math.max(
+      max,
+      channel.map((val) => Math.abs(val)).reduce((a, b) => Math.max(a, b))
+    );
+  }
 
-// While some verb, maybe with a hint of delay and panning would be nice, this is a first pass at making a pleasing click... so we're going to ignore all that and use a single channel.
+  if (max !== 1) {
+    // normalize stuff:
+    for (let i = 0; i < buffer.numberOfChannels; i += 1) {
+      const channel = buffer.getChannelData(i);
+      for (let j = 0; j < channel.length; j += 1) {
+        channel[j] *= max / 1;
+      }
+    }
+  }
 
-// This can be parameterized with the tone, attack, and duration (implicitly release, because the release finishes at the end of the duration).
+  return buffer;
+};
 
 const click = (frequency, duration, attack, sampleRate) => {
   const length = duration * sampleRate;
@@ -41,33 +61,28 @@ const click = (frequency, duration, attack, sampleRate) => {
     sampleRate,
   });
 
-  // define base white noise.
-  const whiteNoise = WhiteNoise(audioCtx, length, sampleRate);
-  const whiteNoiseSource = audioCtx.createBufferSource();
-  whiteNoiseSource.buffer = whiteNoise;
-  whiteNoiseSource.start();
+  // define base white noise & tone
+  const whiteNoise = new AudioBufferSourceNode(audioCtx, {
+    buffer: WhiteNoise(audioCtx, length, sampleRate),
+  });
   const tone = new OscillatorNode(audioCtx, { frequency });
+  // make the tone quieter:
+  const toneGain = audioCtx.createGain();
+  toneGain.gain.setValueAtTime(0, 0.035);
 
-  const whiteNoiseEnvelope = audioCtx.createGain();
-  // control the gain with the tone. Why not?
-  tone.connect(whiteNoiseEnvelope.gain);
-  whiteNoiseSource.connect(whiteNoiseEnvelope);
-
-  // send that through another gain that will be used to control attack and release:
-  const attackReleaseEnvelope = audioCtx.createGain();
-  whiteNoiseEnvelope.connect(attackReleaseEnvelope);
-
-  attackReleaseEnvelope.gain.setValueAtTime(0, 0);
-  attackReleaseEnvelope.gain.exponentialRampToValueAtTime(1, attack);
-  attackReleaseEnvelope.gain.exponentialRampToValueAtTime(
-    0.0001,
-    duration - attack
+  // give them both attacks and connect those to the context
+  attackRelease(audioCtx, tone, attack, duration).connect(toneGain);
+  attackRelease(audioCtx, whiteNoise, attack, duration).connect(
+    audioCtx.destination
   );
+  toneGain.connect(audioCtx.destination);
 
-  attackReleaseEnvelope.connect(audioCtx.destination);
   tone.start();
+  whiteNoise.start();
 
-  return audioCtx.startRendering();
+  return audioCtx.startRendering().then(normalize);
 };
 
-export default click;
+export const clickHigh = click(2000, 0.1, 0.03, 44100);
+export const clickMid = click(1000, 0.1, 0.03, 44100);
+export const clickLow = click(500, 0.1, 0.03, 44100);

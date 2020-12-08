@@ -94,12 +94,13 @@ class Player extends EventTarget {
         if (this.queued === 0) {
           this.stop();
         } // there is a last beat but it has not played yet.
-        else if (this.lastBeat !== null) {
-          this.lastBeat.addEventListener("ended", this.stop);
+        else if (this.lastSource !== null) {
+          this.lastSource.addEventListener("ended", this.stop.bind(this));
         } else {
           // there was never a beat (empty track). Just stop anyhow.
           this.stop();
         }
+        return;
       }
       this.lastBeat = nextBeat;
       const { buffer, time } = nextBeat;

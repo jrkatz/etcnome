@@ -14,7 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import Track from "../player/track.js";
+import { RepeatingSection, SectionList } from "../player/section.js";
+import Measure from "../player/measure.js";
 import Player, { State } from "../player/player.js";
 
 class Controls {
@@ -83,7 +84,19 @@ class Controls {
 
 const bindControls = (playPauseBtn, stopBtn) => {
   const controls = new Controls();
-  controls.init(playPauseBtn, stopBtn, new Player(new Track()));
+  const reusedMeasure = new Measure(200, 5);
+  controls.init(
+    playPauseBtn,
+    stopBtn,
+    new Player(
+      new SectionList([
+        new Measure(120, 4),
+        new RepeatingSection(new Measure(100, 3), 2),
+        reusedMeasure,
+        reusedMeasure,
+      ])
+    )
+  );
 };
 
 if (window) {

@@ -21,11 +21,8 @@
 // classes, which also extend Section.
 
 import { Section } from "./section.js";
-import Click from "../noises/click.js";
+import { clickHigh, clickLow } from "../noises/click.js";
 import Beat from "./beat.js";
-
-const clickHigh = Click(1000, 0.2, 0.03, 44100);
-const clickLow = Click(440, 0.2, 0.03, 44100);
 
 class Measure extends Section {
   constructor(bpm, count) {

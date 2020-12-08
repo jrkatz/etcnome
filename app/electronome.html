@@ -10,14 +10,30 @@
   </head>
   <body>
     <h1>Electronome</h1>
-    <button id="playPause"></button>
-    <button id="stop"></button>
+    <div>
+      <button id="playPause"></button>
+      <button id="stop"></button>
+    </div>
+    <div>
+      <div>
+        <textarea id="editor" cols="20" rows="20"></textarea>
+      </div>
+      <div>
+        <div id="editorErrors"></div>
+        <button id="editorSubmit">Apply</button>
+      </div>
+    </div>
+    <script src="../gen/parser.js"></script>
     <script src="./controls/controls.js" type="module"></script>
     <script type="text/javascript">
       function onElectronomeLoad() {
         window.electronome.bindControls(
           document.getElementById("playPause"),
-          document.getElementById("stop")
+          document.getElementById("stop"),
+          document.getElementById("editor"),
+          document.getElementById("editorErrors"),
+          document.getElementById("editorSubmit"),
+          parser
         );
       }
 

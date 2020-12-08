@@ -11,6 +11,7 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
+  "ignorePatterns": ["/gen"],
   "rules": {
     "no-restricted-syntax": [
       "error",

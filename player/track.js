@@ -43,14 +43,16 @@ class Track extends EventTarget {
     }
 
     const meta = prevBeat.getMeta(this, { count: 0 });
+    const count = meta.count + 1;
+    if (count >= 8) {
+      return null;
+    }
 
-    const prevCount = meta.count;
     const { time: prevTime, duration: prevDuration } = prevBeat;
 
-    const count = (prevCount + 1) % 4;
     const time = prevTime + prevDuration;
 
-    const buffer = count === 0 ? clickHigh : clickLow;
+    const buffer = count % 4 === 0 ? clickHigh : clickLow;
 
     return new Beat(time, this.period, buffer, this, { count });
   }

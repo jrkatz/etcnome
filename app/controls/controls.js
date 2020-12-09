@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { RepeatingSection, SectionList } from "../player/section.js";
-import Measure from "../player/measure.js";
-import Player from "../player/player.js";
+import { RepeatingSection, SectionList } from "../../lib/player/section.js";
+import Measure from "../../lib/player/measure.js";
+import Player from "../../lib/player/player.js";
 import Transport from "./transport.js";
 
 const reusedMeasure = new Measure(200, 5);

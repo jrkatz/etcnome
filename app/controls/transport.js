@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-import { State } from "../player/player.js";
+import { State } from "../../lib/player/player.js";
 
 class Transport {
   constructor(playPauseBtn, stopBtn, player) {

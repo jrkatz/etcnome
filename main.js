@@ -7,7 +7,7 @@ function createWindow() {
   });
 
   win.webContents.openDevTools();
-  win.loadFile("electronome.html");
+  win.loadFile("app/electronome.html");
 }
 
 app.whenReady().then(createWindow);

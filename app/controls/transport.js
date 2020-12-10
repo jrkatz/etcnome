@@ -26,6 +26,7 @@ class Transport {
   init(playPauseBtn, stopBtn, repeatToggle, player) {
     this.ppb = playPauseBtn;
     this.stb = stopBtn;
+    this.stb.innerText = "[ ]";
     this.player = player;
     player.addEventListener("stateChange", (e) => this.toState(e.detail));
     this.toState(player.state);
@@ -38,23 +39,23 @@ class Transport {
 
   stopEnabled() {
     this.stb.disabled = false;
-    this.stb.innerText = "⏹";
     this.stb.onclick = this.player.stop.bind(this.player);
   }
 
   stopDisabled() {
     this.stb.disabled = true;
-    this.stb.innerText = "⏹";
     this.stb.onclick = null;
   }
 
   playEnabled() {
-    this.ppb.innerText = "▶️";
+    this.ppb.innerText = "|>";
+    this.ppb.name = "play";
     this.ppb.onclick = this.player.play.bind(this.player);
   }
 
   pauseEnabled() {
-    this.ppb.innerText = "⏸";
+    this.ppb.innerText = "||";
+    this.ppb.name = "pause";
     this.ppb.onclick = this.player.pause.bind(this.player);
   }
 

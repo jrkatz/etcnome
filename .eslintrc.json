@@ -11,7 +11,7 @@
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "ignorePatterns": ["/gen"],
+  "ignorePatterns": ["/gen", "/lib/interpreter/parser.js"],
   "rules": {
     "no-restricted-syntax": [
       "error",

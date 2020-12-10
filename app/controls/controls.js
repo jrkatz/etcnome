@@ -25,7 +25,6 @@ const bindControls = (
   repeatToggle,
   editorFld,
   editorErrors,
-  editorBtn,
   parser
 ) => {
   const transport = new Transport();
@@ -33,9 +32,9 @@ const bindControls = (
 
   const editor = new Editor(new Interpreter(parser));
   editor.addEventListener("trackChange", (e) => player.setTrack(e.detail));
+  editor.init(editorFld, editorErrors);
 
-  transport.init(playPauseBtn, stopBtn, repeatToggle, player);
-  editor.init(editorFld, editorErrors, editorBtn);
+  transport.init(playPauseBtn, stopBtn, repeatToggle, editor, player);
 };
 
 if (window) {

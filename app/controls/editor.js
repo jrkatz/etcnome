@@ -21,7 +21,6 @@ class Editor extends EventTarget {
     this.errors = [];
     this.fld = null;
     this.errorFld = null;
-    this.btn = null;
     this.interpreter = interpreter;
   }
 
@@ -44,15 +43,17 @@ class Editor extends EventTarget {
     }
   }
 
-  init(fld, errorFld, btn) {
+  init(fld, errorFld) {
     this.fld = fld;
-    this.btn = btn;
     this.errorFld = errorFld;
     this.value = fld.value;
 
-    fld.addEventListener("input", () => this.updateState());
-    btn.addEventListener("click", () => this.apply());
+    fld.addEventListener("input", this.apply.bind(this));
     this.apply();
+  }
+
+  setEnabled(enabled) {
+    this.fld.disabled = !enabled;
   }
 
   apply() {
@@ -61,18 +62,7 @@ class Editor extends EventTarget {
       this.value = this.fld.value;
       this.dispatchEvent(new CustomEvent("trackChange", { detail: track }));
     }
-    this.renderState(errors);
-  }
-
-  updateState() {
-    const { errors } = this.parse(this.fld.value);
-    this.renderState(errors);
-  }
-
-  renderState(errors) {
-    this.errors = errors;
-    this.btn.disabled = this.value === this.fld.value || this.errors.length > 0;
-    this.errorFld.innerText = this.errors.join("\n");
+    this.errorFld.innerText = errors.join("\n");
   }
 }
 

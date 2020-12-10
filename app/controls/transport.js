@@ -17,18 +17,23 @@
 import { State } from "../../lib/player/player.js";
 
 class Transport {
-  constructor(playPauseBtn, stopBtn, player) {
+  constructor() {
     this.ppb = null;
     this.stb = null;
-    this.player = player;
+    this.player = null;
   }
 
-  init(playPauseBtn, stopBtn, player) {
+  init(playPauseBtn, stopBtn, repeatToggle, player) {
     this.ppb = playPauseBtn;
     this.stb = stopBtn;
     this.player = player;
     player.addEventListener("stateChange", (e) => this.toState(e.detail));
     this.toState(player.state);
+
+    player.setRepeat(repeatToggle.checked);
+    repeatToggle.addEventListener("change", () => {
+      player.setRepeat(repeatToggle.checked);
+    });
   }
 
   stopEnabled() {

@@ -1,6 +1,6 @@
 {
   "name": "electronome",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "main.js",
   "scripts": {
     "prestart": "[ -d gen ] || mkdir gen; npx jison parser.jison; mv parser.js gen",

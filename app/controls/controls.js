@@ -22,6 +22,7 @@ import Editor from "./editor.js";
 const bindControls = (
   playPauseBtn,
   stopBtn,
+  repeatToggle,
   editorFld,
   editorErrors,
   editorBtn,
@@ -29,10 +30,11 @@ const bindControls = (
 ) => {
   const transport = new Transport();
   const player = new Player();
+
   const editor = new Editor(new Interpreter(parser));
   editor.addEventListener("trackChange", (e) => player.setTrack(e.detail));
 
-  transport.init(playPauseBtn, stopBtn, player);
+  transport.init(playPauseBtn, stopBtn, repeatToggle, player);
   editor.init(editorFld, editorErrors, editorBtn);
 };
 

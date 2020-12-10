@@ -33,6 +33,7 @@ const bindControls = (
   const editor = new Editor(new Interpreter(parser));
   editor.addEventListener("trackChange", (e) => player.setTrack(e.detail));
   editor.init(editorFld, editorErrors);
+  player.setTrack(editor.track);
 
   transport.init(playPauseBtn, stopBtn, repeatToggle, editor, player);
 };

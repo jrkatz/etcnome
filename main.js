@@ -2,11 +2,10 @@ const { app, BrowserWindow } = require("electron");
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
+    width: 300,
     height: 600,
   });
 
-  win.webContents.openDevTools();
   win.loadFile("app/electronome.html");
 }
 

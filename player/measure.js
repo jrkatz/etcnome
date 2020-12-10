@@ -25,9 +25,9 @@ import { clickHigh, clickLow } from "../noises/click.js";
 import Beat from "./beat.js";
 
 class Measure extends Section {
-  constructor(bpm, count) {
+  constructor(bpm, count, denom = 4) {
     super([clickHigh, clickLow]);
-    this.beatDuration = 60 / bpm;
+    this.beatDuration = (60 / bpm) * (4 / denom);
     this.count = count;
 
     this.firstBeat = new Beat(this.beatDuration, clickHigh, this, 0);

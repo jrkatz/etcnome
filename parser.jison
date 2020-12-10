@@ -22,18 +22,18 @@
 %lex
 
 %%
-[ \t]+                /* skip whitespace */
-"//".*                return 'EOL'; /* pretend comments are end-of-lines */
-[0-9]+("."[0-9]+)?\b  return 'NUMBER';
-\b[Bb][Pp][Mm]\b      return 'BPM';
-"*"                   return '*';
-"x"                   return '*';
-"/"                   return '/'
-"("                   return '(';
-")"                   return ')';
-"//"                  return 'COMMENT';
-\n                    return 'EOL';
-<<EOF>>               return 'EOF';
+[ \t]+             /* skip whitespace */
+"//".*             return 'EOL'; /* pretend comments are end-of-lines */
+[0-9]+("."[0-9]+)? return 'NUMBER';
+\b[Bb][Pp][Mm]\b   return 'BPM';
+"*"                return '*';
+"x"                return '*';
+"/"                return '/'
+"("                return '(';
+")"                return ')';
+"//"               return 'COMMENT';
+\n                 return 'EOL';
+<<EOF>>            return 'EOF';
 
 /lex
 

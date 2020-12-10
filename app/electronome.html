@@ -13,6 +13,13 @@
     <div>
       <button id="playPause"></button>
       <button id="stop"></button>
+      <input
+        type="checkbox"
+        id="repeatToggle"
+        name="repeatToggle"
+        value="repeat"
+      />
+      <label for="repeatToggle">Repeat</label>
     </div>
     <div>
       <div>
@@ -30,6 +37,7 @@
         window.electronome.bindControls(
           document.getElementById("playPause"),
           document.getElementById("stop"),
+          document.getElementById("repeatToggle"),
           document.getElementById("editor"),
           document.getElementById("editorErrors"),
           document.getElementById("editorSubmit"),

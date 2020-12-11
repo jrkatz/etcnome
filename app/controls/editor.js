@@ -49,6 +49,9 @@ class Editor extends EventTarget {
     if (this.interpreter.demoTxt) {
       this.fld.value = this.interpreter.demoTxt;
     }
+    if (this.interpreter.placeholderTxt) {
+      this.fld.placeholder = this.interpreter.placeholderTxt;
+    }
     this.errorFld = errorFld;
     this.value = fld.value;
 

@@ -6,7 +6,7 @@ function createWindow() {
     height: 600,
   });
 
-  win.loadFile("app/electronome.html");
+  win.loadFile("app/etcnome.html");
 }
 
 app.whenReady().then(createWindow);

@@ -1,4 +1,4 @@
-// Electronome - A programmable metronome
+// Etcnome - A programmable metronome
 // Copyright (C) 2020  Jacob Katz
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-/* description: Parses electronome metronome config language 
+/* description: Parses etcnome metronome config language 
  * (final name TBD) to an easy-to-read AST
  */
 

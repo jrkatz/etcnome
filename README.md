@@ -1,4 +1,4 @@
-# electronome
+# etcnome
 
 Programmable metronome.
-Try it out at https://jrkatz.github.io/electronome/
+Try it out at https://jrkatz.github.io/etcnome/

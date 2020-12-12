@@ -1,5 +1,5 @@
 {
-  "name": "electronome",
+  "name": "etcnome",
   "version": "0.0.4",
   "main": "main.js",
   "scripts": {
@@ -9,20 +9,20 @@
   "description": "programmable metronome",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jrkatz/electronome.git"
+    "url": "git+https://github.com/jrkatz/etcnome.git"
   },
   "keywords": [
     "programmable",
     "metronome",
     "electron",
-    "electronome"
+    "etcnome"
   ],
   "author": "Jacob Katz",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/jrkatz/electronome/issues"
+    "url": "https://github.com/jrkatz/etcnome/issues"
   },
-  "homepage": "https://github.com/jrkatz/electronome#readme",
+  "homepage": "https://github.com/jrkatz/etcnome#readme",
   "devDependencies": {
     "electron": "^11.0.3",
     "eslint": "^7.14.0",

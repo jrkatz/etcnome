@@ -1,4 +1,4 @@
-// Electronome - A programmable metronome
+// Etcnome - A programmable metronome
 // Copyright (C) 2020  Jacob Katz
 //
 // This program is free software: you can redistribute it and/or modify
@@ -40,11 +40,11 @@ const bindControls = (
 
 if (window) {
   let toRun = [];
-  if (Array.isArray(window.electronome)) {
-    toRun = window.electronome;
+  if (Array.isArray(window.etcnome)) {
+    toRun = window.etcnome;
   }
-  window.electronome = window.electronome || {};
-  window.electronome.bindControls = bindControls;
+  window.etcnome = window.etcnome || {};
+  window.etcnome.bindControls = bindControls;
 
   for (const fn of toRun) {
     fn();

@@ -23,6 +23,7 @@ const bindControls = (
   playPauseBtn,
   stopBtn,
   repeatToggle,
+  exportBtn,
   editorFld,
   editorErrors,
   parser
@@ -35,7 +36,14 @@ const bindControls = (
   editor.init(editorFld, editorErrors);
   player.setTrack(editor.track);
 
-  transport.init(playPauseBtn, stopBtn, repeatToggle, editor, player);
+  transport.init(
+    playPauseBtn,
+    stopBtn,
+    repeatToggle,
+    exportBtn,
+    editor,
+    player
+  );
 };
 
 if (window) {

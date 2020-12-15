@@ -2,10 +2,14 @@ const { app, BrowserWindow } = require("electron");
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 500,
+    webPreferences: {
+      contextIsolation: true,
+    },
+    width: 900,
     height: 600,
   });
 
+  win.webContents.openDevTools();
   win.loadFile("app/etcnome.html");
 }
 

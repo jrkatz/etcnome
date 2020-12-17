@@ -18,7 +18,6 @@ class Editor extends EventTarget {
   constructor(interpreter) {
     super();
     this.track = null;
-    this.value = null;
     this.errors = [];
     this.fld = null;
     this.errorFld = null;
@@ -53,7 +52,6 @@ class Editor extends EventTarget {
       this.fld.placeholder = this.interpreter.placeholderTxt;
     }
     this.errorFld = errorFld;
-    this.value = fld.value;
 
     fld.addEventListener("input", this.apply.bind(this));
     this.apply();
@@ -66,10 +64,7 @@ class Editor extends EventTarget {
   apply() {
     const { track, errors } = this.parse(this.fld.value);
     this.track = track;
-    if (errors.length === 0) {
-      this.value = this.fld.value;
-      this.dispatchEvent(new CustomEvent("trackChange", { detail: track }));
-    }
+    this.dispatchEvent(new CustomEvent("trackChange", { detail: track }));
     this.errorFld.innerText = errors.join("\n");
   }
 }

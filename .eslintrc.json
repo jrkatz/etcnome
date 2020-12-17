@@ -19,6 +19,11 @@
       "LabeledStatement",
       "WithStatement"
     ],
+    "max-len": [
+      "error",
+      { "code": 100, "comments": 80, "ignorePattern": "TODO" }
+    ],
+    "no-console": ["error", { "allow": ["error"] }],
     "max-classes-per-file": "off",
     "import/extensions": [
       "error",

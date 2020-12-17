@@ -22,18 +22,22 @@
 %lex
 
 %%
-[ \t]+             /* skip whitespace */
-"//".*             return 'EOL'; /* pretend comments are end-of-lines */
-[0-9]+("."[0-9]+)? return 'NUMBER';
-\b[Bb][Pp][Mm]\b   return 'BPM';
-"*"                return '*';
-"x"                return '*';
-"/"                return '/'
-"("                return '(';
-")"                return ')';
-"//"               return 'COMMENT';
-\n                 return 'EOL';
-<<EOF>>            return 'EOF';
+[ \t]+                      /* skip whitespace */
+"//"[^\n]*                  return 'COMMENT';
+"..."                       return 'DOT_DOT_DOT';
+[0-9]+"."[0-9]+             return 'DECIMAL_NUMBER';
+[0-9]+                      return 'WHOLE_NUMBER';
+\b[Bb][Pp][Mm]\b            return 'BPM';
+\b[Ss][[Ww][Ii][Nn][Gg]\b   return 'SWING';
+\b[Oo][Ff][Ff]\b            return 'OFF';
+"*"                         return '*';
+"x"                         return '*';
+"/"                         return '/'
+"("                         return '(';
+")"                         return ')';
+"//"                        return 'COMMENT';
+\n                          return 'EOL';
+<<EOF>>                     return 'EOF';
 
 /lex
 
@@ -60,6 +64,11 @@ track
         }
     ;
 
+number
+    : WHOLE_NUMBER
+    | DECIMAL_NUMBER
+    ;
+
 /* allow newlines at the top of the file before the first bpm */
 init_bpm
     : eol bpm
@@ -69,15 +78,37 @@ init_bpm
 
 /* an instruction that sets the bpm for subsequent instructions in the same scope */
 bpm
-    : NUMBER BPM
+    : number BPM
         { $$ = ["bpm", $1]; }
     ;
 
+number_list
+    : number 
+        { $$ = [$1]; }
+    | number number_list
+        {
+ 		tmp = $2;
+		tmp.splice(0, 0, $1);
+		$$ = tmp;
+	}
+    ;
+
+swing
+    : SWING number_list
+	{ $$ = ["swing", {ratios: $2}]; }
+    | SWING number_list DOT_DOT_DOT WHOLE_NUMBER
+	{ $$ = ["swing", {ratios: $2, phrase: $4}]; }
+    | SWING OFF
+ 	{ $$ = ["swing", null]; }
+    ;
+
 /* One newline, two newlines, three newlines, end of file... all the same to me. */
+/* Pretend comments are newlines. */
 eol
     : EOL
     | EOF
     | EOL eol
+    | COMMENT eol
     ;
 
 /* A list of instructions separated by eols */
@@ -95,16 +126,17 @@ instructions
 /* A single instruction either produces a section or sets the bpm for subsequent sections in the same scope */
 instruction
     : bpm
+    | swing
     | section
     ;
 
 section
-    : NUMBER '/' NUMBER 
+    : WHOLE_NUMBER '/' number
         { $$ = ["Measure", $1, $3]; }
     | '(' instructions ')'
         { $$ = $2; }
     | '(' eol instructions ')'
         { $$ = $3; }
-    | section '*' NUMBER
+    | section '*' WHOLE_NUMBER
         { $$ = ["RepeatingSection", $1, $3]; }
     ;

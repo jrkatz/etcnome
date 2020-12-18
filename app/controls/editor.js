@@ -53,7 +53,14 @@ class Editor extends EventTarget {
     }
     this.errorFld = errorFld;
 
-    fld.addEventListener("input", this.apply.bind(this));
+    let inputTimeout = null;
+    fld.addEventListener("input", () => {
+      if (inputTimeout) {
+        clearTimeout(inputTimeout);
+      }
+      inputTimeout = setTimeout(() => this.apply(), 200);
+      this.apply.bind(this);
+    });
     this.apply();
   }
 

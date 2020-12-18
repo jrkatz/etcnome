@@ -29,6 +29,7 @@
 \b[Bb][Pp][Mm]\b            return 'BPM';
 \b[Ss][[Ww][Ii][Nn][Gg]\b   return 'SWING';
 \b[Oo][Ff][Ff]\b            return 'OFF';
+":"                         return ':';
 "+"                         return '+';
 "*"                         return '*';
 "x"                         return '*';
@@ -139,10 +140,21 @@ instruction
     | section
     ;
 
-measure_num
+phrase_list
     : whole_number
         { $$ = [$1]; }
-    | whole_number '+' measure_num
+    | whole_number '+' phrase_list
+        {
+          tmp = $3;
+          tmp.splice(0,0,$1);
+          $$ = tmp;
+        }
+    ;
+
+polyrhythm_list
+    : phrase_list
+      { $$ = [$1]; }
+    | phrase_list ':' polyrhythm_list
         {
           tmp = $3;
           tmp.splice(0,0,$1);
@@ -155,7 +167,7 @@ measure_denom
     ;
 
 measure
-    : measure_num '/' measure_denom
+    : polyrhythm_list '/' measure_denom
         { $$ = ["Measure", $1, $3]; }
     ;
 

@@ -96,6 +96,10 @@ bpm
     : BPM number
         { $$ = ["bpm", $2]; }
     ;
+rel_bpm
+    : BPM '*' number
+        { $$ = ["rel_bpm", $3]; }
+    ;
 
 number_list
     : number 
@@ -155,6 +159,7 @@ reinterpret
 /* A single instruction either produces a section or sets the bpm for subsequent sections in the same scope */
 instruction
     : bpm
+    | rel_bpm
     | swing
     | assign
     | section

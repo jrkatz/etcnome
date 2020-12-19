@@ -19,26 +19,31 @@
  */
 /* lexical grammar */
 %lex
+%{
+  //put some symbols in for the lexer
+  //these are our reserved words.
+  sym = new Set(['BPM','SWING', 'OFF', 'RE']);
+%}
 
 %%
-[ \t]+                      /* skip whitespace */
-"//"[^\n]*                  return 'COMMENT';
-"..."                       return 'DOT_DOT_DOT';
-[0-9]+"."[0-9]+             return 'DECIMAL_NUMBER';
-[0-9]+                      return 'WHOLE_NUMBER';
-\b[Bb][Pp][Mm]\b            return 'BPM';
-\b[Ss][[Ww][Ii][Nn][Gg]\b   return 'SWING';
-\b[Oo][Ff][Ff]\b            return 'OFF';
-":"                         return ':';
-"+"                         return '+';
-"*"                         return '*';
-"x"                         return '*';
-"/"                         return '/'
-"("                         return '(';
-")"                         return ')';
-"//"                        return 'COMMENT';
-\n                          return 'EOL';
-<<EOF>>                     return 'EOF';
+[ \t]+                     /* skip whitespace */
+"//"[^\n]*                 return 'COMMENT';
+"..."                      return 'DOT_DOT_DOT';
+[0-9]+"."[0-9]+            return 'DECIMAL_NUMBER';
+[0-9]+                     return 'WHOLE_NUMBER';
+\b[a-zA-Z]+[0-9a-zA-Z]*\b  return sym.has(yytext.toUpperCase()) ? yytext.toUpperCase() : 'IDENTIFIER';
+"="                        return '=';
+":"                        return ':';
+"+"                        return '+';
+"*"                        return '*';
+"x"                        return '*';
+"/"                        return '/'
+"("                        return '(';
+")"                        return ')';
+"//"                       return 'COMMENT';
+\n                         return 'EOL';
+<<EOF>>                    return 'EOF';
+
 
 /lex
 
@@ -133,10 +138,25 @@ instructions
         }
     ;
 
+assign
+    : IDENTIFIER '=' section
+        { $$ = ['assign', $1, $3]; }
+    ;
+
+play
+    : IDENTIFIER
+        { $$ = ['play', $1]; }
+    ;
+reinterpret
+    : RE IDENTIFIER
+        { $$ = ['reinterpret', $2] }
+    ;
+
 /* A single instruction either produces a section or sets the bpm for subsequent sections in the same scope */
 instruction
     : bpm
     | swing
+    | assign
     | section
     ;
 
@@ -173,6 +193,8 @@ measure
 
 section
     : measure
+    | play
+    | reinterpret
     | '(' instructions ')'
         { $$ = $2; }
     | '(' eol instructions ')'

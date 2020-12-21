@@ -3,7 +3,7 @@
   "version": "0.0.4",
   "main": "main.js",
   "scripts": {
-    "prestart": "npx jison parser.jison; mv parser.js lib/interpreter",
+    "prestart": "cd lib/interpreter; npx jison parser.jison",
     "start": "electron ."
   },
   "description": "programmable metronome",

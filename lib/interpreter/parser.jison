@@ -22,27 +22,43 @@
 %{
   //put some symbols in for the lexer
   //these are our reserved words.
-  sym = new Set(['BPM','SWING', 'OFF', 'RE']);
+  sym = new Map([
+    ['BPM', 'BPM'],
+    ['SWING', 'SWING'],
+    ['OFF', 'OFF'],
+    ['RE', 'RE'],
+    ['X', '*'],
+    ['BEATS', 'BEATS'],
+    ['H', 'HIGH' ],
+    ['HI', 'HIGH' ],
+    ['HIGH', 'HIGH'],
+    ['M', 'MID'],
+    ['MID', 'MID'],
+    ['L', 'LOW'],
+    ['LO', 'LOW'],
+    ['LOW', 'LOW'],
+  ]);
 %}
 
 %%
-[ \t]+                     /* skip whitespace */
-"//"[^\n]*                 return 'COMMENT';
-"..."                      return 'DOT_DOT_DOT';
-[0-9]+"."[0-9]+            return 'DECIMAL_NUMBER';
-[0-9]+                     return 'WHOLE_NUMBER';
-\b[a-zA-Z]+[0-9a-zA-Z]*\b  return sym.has(yytext.toUpperCase()) ? yytext.toUpperCase() : 'IDENTIFIER';
-"="                        return '=';
-":"                        return ':';
-"+"                        return '+';
-"*"                        return '*';
-"x"                        return '*';
-"/"                        return '/'
-"("                        return '(';
-")"                        return ')';
-"//"                       return 'COMMENT';
-\n                         return 'EOL';
-<<EOF>>                    return 'EOF';
+[ \t]+                        /* skip whitespace */
+"//"[^\n]*                    return 'COMMENT';
+"..."                         return 'DOT_DOT_DOT';
+[0-9]+"."[0-9]+               return 'DECIMAL_NUMBER';
+[0-9]+                        return 'WHOLE_NUMBER';
+\b[a-wyzA-WYZ][0-9a-zA-Z]*\b  return sym.has(yytext.toUpperCase()) ? sym.get(yytext.toUpperCase()) : 'IDENTIFIER';
+\b[a-zA-Z]{2}[0-9a-zA-Z]*\b   return sym.has(yytext.toUpperCase()) ? sym.get(yytext.toUpperCase()) : 'IDENTIFIER';
+"="                           return '=';
+":"                           return ':';
+"+"                           return '+';
+"*"                           return '*';
+[xX]                          return '*';
+"/"                           return '/'
+"("                           return '(';
+")"                           return ')';
+"//"                          return 'COMMENT';
+\n                            return 'EOL';
+<<EOF>>                       return 'EOF';
 
 
 /lex
@@ -96,6 +112,7 @@ bpm
     : BPM number
         { $$ = ["bpm", $2]; }
     ;
+
 rel_bpm
     : BPM '*' number
         { $$ = ["rel_bpm", $3]; }
@@ -106,10 +123,10 @@ number_list
         { $$ = [$1]; }
     | number number_list
         {
- 		tmp = $2;
-		tmp.splice(0, 0, $1);
-		$$ = tmp;
-	}
+ 		        tmp = $2;
+		        tmp.splice(0, 0, $1);
+		        $$ = tmp;
+	      }
     ;
 
 swing
@@ -196,8 +213,48 @@ measure
         { $$ = ["Measure", $1, $3]; }
     ;
 
+/* The expressions in this section bother me. I'm sure I missed something in the manual;
+returning the token value itself should be easy. And yet... */
+intensity
+    : HIGH
+        { $$ = 'HIGH'; }
+    | MID
+        { $$ = 'MID'; }
+    | LOW
+        { $$ = 'LOW'; }
+    ;
+
+duration
+    : '*' number
+        { $$ = ['rel', $2]; }
+    | number
+        { $$ = ['exact', $1]; }
+    ;
+
+beat
+    : intensity duration
+        { $$ = [$1, $2]; }
+    ;
+
+beat_list
+    : beat
+        { $$ = [$1]; }
+    | beat beat_list
+        { 
+          tmp = $2;
+          tmp.splice(0,0,$1);
+          $$ = tmp;
+        }
+    ;
+
+beats
+   : BEATS beat_list
+       { $$ = ['BeatList', $2]; }
+   ;
+
 section
     : measure
+    | beats
     | play
     | reinterpret
     | '(' instructions ')'

@@ -16,6 +16,10 @@
 
 import { State } from "../../lib/player/player.js";
 
+const mediaSessionState = navigator?.mediaSession ? (state) => {
+      navigator.mediaSession.playbackState = state;
+} : () => {};
+
 class Transport {
   constructor() {
     this.ppb = null;
@@ -32,18 +36,35 @@ class Transport {
     this.player = player;
     player.addEventListener("stateChange", (e) => this.toState(e.detail));
     this.editor = editor;
+    this.stb.onclick = () => this.player.stop();
 
     this.toState(player.state);
+    this.exportBtn.onclick = () => this.player.exportWav();
 
     player.setRepeat(repeatToggle.checked);
     repeatToggle.addEventListener("change", () => {
       player.setRepeat(repeatToggle.checked);
     });
+
+		console.log('doing the thing');
+		if (navigator?.mediaSession) {
+			navigator.mediaSession.metadata = new MediaMetadata({
+					title: 'etcnome',
+					artist: 'you',
+				});
+    navigator.mediaSession.setActionHandler('play', () => this.player.play());
+    navigator.mediaSession.setActionHandler('pause', () => this.player.pause());
+    navigator.mediaSession.setActionHandler('stop', () => this.player.stop());
+    navigator.mediaSession.setActionHandler('previoustrack', () => this.player.restart());
+    navigator.mediaSession.setActionHandler('nexttrack', () => this.player.restart());
+		}
+
+    console.log(navigator.mediaSession);
+   document.addEventListener('keydown', (e) => console.log(e));
   }
 
   exportEnabled() {
     this.exportBtn.disabled = false;
-    this.exportBtn.onclick = () => this.player.exportWav();
   }
 
   exportDisabled() {
@@ -52,12 +73,10 @@ class Transport {
 
   stopEnabled() {
     this.stb.disabled = false;
-    this.stb.onclick = this.player.stop.bind(this.player);
   }
 
   stopDisabled() {
     this.stb.disabled = true;
-    this.stb.onclick = null;
   }
 
   playEnabled() {
@@ -119,15 +138,20 @@ class Transport {
   toState(state) {
     if (state === State.playing) {
       this.controlsPlaying();
+      mediaSessionState('playing');
     } else if (state === State.paused) {
       this.controlsPaused();
+      mediaSessionState('paused');
     } else if (state === State.stopped) {
       this.controlsStopped();
+      mediaSessionState('paused');
     } else if (state === State.exporting) {
       this.controlsExporting();
+      mediaSessionState('paused');
     } else {
       // default to empty
       this.controlsEmpty();
+      mediaSessionState('none');
     }
   }
 }

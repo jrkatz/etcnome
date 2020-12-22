@@ -30,6 +30,12 @@
         <div id="editorErrors"></div>
       </div>
     </div>
+    <script type="text/javascript">
+      //polyfills for audio contexts for safari:
+      window.OfflineAudioContext =
+        window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+    </script>
     <script src="../lib/interpreter/parser.js"></script>
     <script src="./controls/controls.js" type="module"></script>
     <script type="text/javascript">

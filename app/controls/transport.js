@@ -81,7 +81,6 @@ class Transport {
   }
 
   controlsStopped() {
-    this.player.stop();
     this.playEnabled();
     this.stopDisabled();
     this.editor.setEnabled(true);
@@ -109,7 +108,7 @@ class Transport {
     this.editor.setEnabled(true);
   }
 
-  controlsExporting() {
+  controlsThinking() {
     this.playDisabled();
     this.stopDisabled();
     this.exportDisabled();
@@ -123,8 +122,8 @@ class Transport {
       this.controlsPaused();
     } else if (state === State.stopped) {
       this.controlsStopped();
-    } else if (state === State.exporting) {
-      this.controlsExporting();
+    } else if (state === State.thinking) {
+      this.controlsThinking();
     } else {
       // default to empty
       this.controlsEmpty();

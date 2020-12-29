@@ -24,10 +24,9 @@ class Transport {
     this.editor = null;
   }
 
-  init(playPauseBtn, stopBtn, repeatToggle, exportBtn, editor, player) {
+  init(playPauseBtn, stopBtn, repeatToggle, editor, player) {
     this.ppb = playPauseBtn;
     this.stb = stopBtn;
-    this.exportBtn = exportBtn;
     this.stb.innerText = "[ ]";
     this.player = player;
     player.addEventListener("stateChange", (e) => this.toState(e.detail));
@@ -39,15 +38,6 @@ class Transport {
     repeatToggle.addEventListener("change", () => {
       player.setRepeat(repeatToggle.checked);
     });
-  }
-
-  exportEnabled() {
-    this.exportBtn.disabled = false;
-    this.exportBtn.onclick = () => this.player.exportWav();
-  }
-
-  exportDisabled() {
-    this.exportBtn.disabled = true;
   }
 
   stopEnabled() {
@@ -84,34 +74,29 @@ class Transport {
     this.playEnabled();
     this.stopDisabled();
     this.editor.setEnabled(true);
-    this.exportEnabled();
   }
 
   controlsPlaying() {
     this.pauseEnabled();
     this.stopEnabled();
     this.editor.setEnabled(false);
-    this.exportDisabled();
   }
 
   controlsPaused() {
     this.stopEnabled();
     this.playEnabled();
     this.editor.setEnabled(false);
-    this.exportDisabled();
   }
 
   controlsEmpty() {
     this.playDisabled();
     this.stopDisabled();
-    this.exportDisabled();
     this.editor.setEnabled(true);
   }
 
   controlsThinking() {
     this.playDisabled();
     this.stopDisabled();
-    this.exportDisabled();
     this.editor.setEnabled(false);
   }
 

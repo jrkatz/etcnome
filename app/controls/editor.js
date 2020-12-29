@@ -19,6 +19,7 @@ class Editor extends EventTarget {
     super();
     this.track = null;
     this.errors = [];
+    this.locks = 0;
     this.fld = null;
     this.errorFld = null;
     this.interpreter = interpreter;
@@ -62,10 +63,16 @@ class Editor extends EventTarget {
       this.apply.bind(this);
     });
     this.apply();
+    if (this.fld) {
+      this.fld.disabled = !this.enabled;
+    }
   }
 
   setEnabled(enabled) {
-    this.fld.disabled = !enabled;
+    this.enabled = enabled;
+    if (this.fld) {
+      this.fld.disabled = !this.enabled;
+    }
   }
 
   apply() {

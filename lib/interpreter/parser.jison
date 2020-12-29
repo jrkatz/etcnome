@@ -71,19 +71,10 @@
 %% /* language grammar */
 /* require a bpm as the first instruction */
 track
-    : init_bpm eol instructions
-        {
-        tmp = $3;
-        tmp.splice(1, 0, $1);
-        return tmp;
-        }
-    | init_bpm eol
-        { return ["instrs", $1]; }
-    | eol
-        {
-        //make empty files valid, if boring.
-        return ["instrs"];
-        }
+    : instructions
+      { return $1; }
+    | eol instructions
+      { return $2; }
     ;
 
 whole_number
@@ -100,22 +91,10 @@ number
     | decimal_number
     ;
 
-/* allow newlines at the top of the file before the first bpm */
-init_bpm
-    : eol bpm
-        { $$ = $2; }
-    | bpm
-    ;
-
 /* an instruction that sets the bpm for subsequent instructions in the same scope */
 bpm
-    : BPM number
+    : BPM exact_or_rel_num
         { $$ = ["bpm", $2]; }
-    ;
-
-rel_bpm
-    : BPM '*' number
-        { $$ = ["rel_bpm", $3]; }
     ;
 
 number_list
@@ -176,7 +155,6 @@ reinterpret
 /* A single instruction either produces a section or sets the bpm for subsequent sections in the same scope */
 instruction
     : bpm
-    | rel_bpm
     | swing
     | assign
     | section
@@ -224,7 +202,7 @@ intensity
         { $$ = 'LOW'; }
     ;
 
-duration
+exact_or_rel_num
     : '*' number
         { $$ = ['rel', $2]; }
     | number
@@ -232,7 +210,7 @@ duration
     ;
 
 beat
-    : intensity duration
+    : intensity exact_or_rel_num
         { $$ = [$1, $2]; }
     ;
 

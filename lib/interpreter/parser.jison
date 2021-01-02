@@ -26,7 +26,7 @@
     ['BPM', 'BPM'],
     ['SWING', 'SWING'],
     ['OFF', 'OFF'],
-    ['RE', 'RE'],
+    ['EXACTLY', 'EXACTLY'],
     ['X', '*'],
     ['BEATS', 'BEATS'],
     ['H', 'HIGH' ],
@@ -150,12 +150,13 @@ assign
     ;
 
 play
-    : IDENTIFIER
-        { $$ = ['play', $1]; }
+    : EXACTLY IDENTIFIER
+        { $$ = ['play', $2]; }
     ;
+
 reinterpret
-    : RE IDENTIFIER
-        { $$ = ['reinterpret', $2] }
+    : IDENTIFIER
+        { $$ = ['reinterpret', $1] }
     ;
 
 /* A single instruction either produces a section or sets the bpm for subsequent sections in the same scope */

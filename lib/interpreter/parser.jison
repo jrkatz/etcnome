@@ -46,6 +46,7 @@
 "..."                         return 'DOT_DOT_DOT';
 [0-9]+"."[0-9]+               return 'DECIMAL_NUMBER';
 [0-9]+                        return 'WHOLE_NUMBER';
+\b[Aa]" "[Tt][Ee][Mm][Pp][Oo] return 'A_TEMPO';
 \b[a-wyzA-WYZ][0-9a-zA-Z]*\b  return sym.has(yytext.toUpperCase()) ? sym.get(yytext.toUpperCase()) : 'IDENTIFIER';
 \b[a-zA-Z]{2}[0-9a-zA-Z]*\b   return sym.has(yytext.toUpperCase()) ? sym.get(yytext.toUpperCase()) : 'IDENTIFIER';
 "="                           return '=';
@@ -95,6 +96,11 @@ number
 bpm
     : BPM exact_or_rel_num
         { $$ = ["bpm", $2]; }
+    ;
+
+a_tempo
+    : A_TEMPO
+        { $$ = ["a_tempo"]; }
     ;
 
 number_list
@@ -155,6 +161,7 @@ reinterpret
 /* A single instruction either produces a section or sets the bpm for subsequent sections in the same scope */
 instruction
     : bpm
+    | a_tempo
     | swing
     | assign
     | section

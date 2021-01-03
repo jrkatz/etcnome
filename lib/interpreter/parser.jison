@@ -37,6 +37,8 @@
     ['L', 'LOW'],
     ['LO', 'LOW'],
     ['LOW', 'LOW'],
+    ['ACC', 'ADJUST_BPM'],
+    ['RIT', 'ADJUST_BPM'],
   ]);
 %}
 
@@ -96,6 +98,14 @@ bpm
     : BPM exact_or_rel_num
         { $$ = ["bpm", $2]; }
     ;
+
+adjust_bpm
+    : ADJUST_BPM exact_or_rel_num number
+        { $$ = ["adjust_bpm", $2, $3] }
+    | ADJUST_BPM exact_or_rel_num number number
+        { $$ = ["adjust_bpm", $2, $3, $4] }
+;
+
 
 a_tempo
     : A_TEMPO
@@ -158,6 +168,7 @@ reinterpret
 /* A single instruction either produces a section or sets the bpm for subsequent sections in the same scope */
 instruction
     : bpm
+    | adjust_bpm
     | a_tempo
     | swing
     | assign

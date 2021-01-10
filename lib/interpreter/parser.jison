@@ -65,16 +65,15 @@
 /lex
 
 %start track
-%{
-        let tmp = null;
-%}
 
 %% /* language grammar */
 /* require a bpm as the first instruction */
 track
-    : instructions
+    : instructions EOF
       { return $1; }
-    | eol instructions
+    | eol instructions EOF
+      { return $2; }
+    | eol instructions eol EOF
       { return $2; }
     ;
 
@@ -106,11 +105,10 @@ a_tempo
 number_list
     : number 
         { $$ = [$1]; }
-    | number number_list
+    | number_list number
         {
- 		        tmp = $2;
-		        tmp.splice(0, 0, $1);
-		        $$ = tmp;
+          $1.push($2);
+          $$=$1
 	      }
     ;
 
@@ -127,20 +125,18 @@ swing
 /* Pretend comments are newlines. */
 eol
     : EOL
-    | EOF
     | EOL eol
     | COMMENT eol
     ;
 
 /* A list of instructions separated by eols */
 instructions
-    : instruction eol
+    : instruction
         { $$ = [ "instrs", $1 ]; }
-    | instruction eol instructions
+    | instructions eol instruction
         { 
-          tmp = $3;
-          tmp.splice(1, 0, $1);
-          $$ = tmp;
+          $1.push($3);
+          $$ = $1;
         }
     ;
 
@@ -171,22 +167,20 @@ instruction
 phrase_list
     : whole_number
         { $$ = [$1]; }
-    | whole_number '+' phrase_list
+    | phrase_list '+' whole_number
         {
-          tmp = $3;
-          tmp.splice(0,0,$1);
-          $$ = tmp;
+          $1.push($3);
+          $$=$1;
         }
     ;
 
 polyrhythm_list
     : phrase_list
       { $$ = [$1]; }
-    | phrase_list ':' polyrhythm_list
+    | polyrhythm_list ':' phrase_list
         {
-          tmp = $3;
-          tmp.splice(0,0,$1);
-          $$ = tmp;
+          $1.push($3);
+          $$ = $1;
         }
     ;
 
@@ -225,11 +219,10 @@ beat
 beat_list
     : beat
         { $$ = [$1]; }
-    | beat beat_list
+    | beat_list beat
         { 
-          tmp = $2;
-          tmp.splice(0,0,$1);
-          $$ = tmp;
+          $1.push($2);
+          $$=$1;
         }
     ;
 

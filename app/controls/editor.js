@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+const makeOpt = (value) => {
+  const opt = document.createElement("option");
+  opt.value = value;
+  opt.text = value;
+  return opt;
+};
 class Editor extends EventTarget {
   constructor(interpreter) {
     super();
@@ -22,6 +28,7 @@ class Editor extends EventTarget {
     this.locks = 0;
     this.fld = null;
     this.errorFld = null;
+    this.exampleSelector = null;
     this.interpreter = interpreter;
   }
 
@@ -44,8 +51,23 @@ class Editor extends EventTarget {
     }
   }
 
-  init(fld, errorFld) {
+  init(fld, errorFld, exampleSelector) {
     this.fld = fld;
+    this.exampleSelector = exampleSelector;
+    for (let i = 0; i < exampleSelector.length; i += 1) {
+      exampleSelector.remove(0); // remove the first element
+    }
+    Object.keys(this?.interpreter?.examples || {})
+      .map(makeOpt)
+      .forEach((name) => exampleSelector.add(name));
+    exampleSelector.addEventListener("change", (event) => {
+      const program = this?.interpreter?.examples[event.target.value];
+      if (program) {
+        this.fld.value = program;
+        this.apply();
+      }
+    });
+
     if (this.interpreter.demoTxt) {
       this.fld.value = this.interpreter.demoTxt;
     }
@@ -60,7 +82,6 @@ class Editor extends EventTarget {
         clearTimeout(inputTimeout);
       }
       inputTimeout = setTimeout(() => this.apply(), 200);
-      this.apply.bind(this);
     });
     this.apply();
     if (this.fld) {
@@ -72,6 +93,9 @@ class Editor extends EventTarget {
     this.enabled = enabled;
     if (this.fld) {
       this.fld.disabled = !this.enabled;
+    }
+    if (this.exampleSelector) {
+      this.exampleSelector.disabled = !this.enabled;
     }
   }
 

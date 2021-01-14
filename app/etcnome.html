@@ -26,6 +26,8 @@
       <div>
         <textarea id="editor" cols="45" rows="30"></textarea>
       </div>
+      <label for="select">Load example</label>
+      <select id="exampleSelector"></select>
       <div>
         <div id="editorErrors"></div>
       </div>
@@ -47,6 +49,7 @@
           document.getElementById("export"),
           document.getElementById("editor"),
           document.getElementById("editorErrors"),
+          document.getElementById("exampleSelector"),
           parser
         );
       }

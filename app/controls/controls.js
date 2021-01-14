@@ -28,6 +28,7 @@ const bindControls = (
   exportBtn,
   editorFld,
   editorErrors,
+  exampleSelector,
   parser
 ) => {
   const transport = new Transport();
@@ -43,7 +44,7 @@ const bindControls = (
 
   transport.init(playPauseBtn, stopBtn, repeatToggle, editor, player);
   exportCtrls.init(exportBtn, exporter);
-  editor.init(editorFld, editorErrors);
+  editor.init(editorFld, editorErrors, exampleSelector);
 };
 
 if (window) {

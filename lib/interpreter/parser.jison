@@ -73,6 +73,8 @@
 track
     : instructions EOF
       { return $1; }
+    | instructions eol EOF
+      { return $1; }
     | eol instructions EOF
       { return $2; }
     | eol instructions eol EOF
@@ -136,6 +138,7 @@ swing
 eol
     : EOL
     | EOL eol
+    | COMMENT
     | COMMENT eol
     ;
 
@@ -250,6 +253,8 @@ section
     | '(' instructions ')'
         { $$ = $2; }
     | '(' eol instructions ')'
+        { $$ = $3; }
+    | '(' eol instructions eol ')'
         { $$ = $3; }
     | section '*' whole_number
         { $$ = ["RepeatingSection", $1, $3]; }

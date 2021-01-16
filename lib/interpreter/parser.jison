@@ -26,6 +26,7 @@
     ['BPM', 'BPM'],
     ['SWING', 'SWING'],
     ['OFF', 'OFF'],
+    ['STRAIGHT', 'STRAIGHT'],
     ['EXACTLY', 'EXACTLY'],
     ['X', '*'],
     ['BEATS', 'BEATS'],
@@ -130,6 +131,8 @@ swing
     | SWING number_list DOT_DOT_DOT whole_number
 	{ $$ = ["swing", {ratios: $2, phrase: $4}]; }
     | SWING OFF
+ 	{ $$ = ["swing", null]; }
+    | STRAIGHT
  	{ $$ = ["swing", null]; }
     ;
 

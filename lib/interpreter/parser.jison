@@ -73,24 +73,26 @@
 %}
 
 %%
-[ \t]+                        log();/* skip whitespace */
-"//"[^\n]*                    return log('COMMENT');
-"..."                         return log('DOT_DOT_DOT');
-[0-9]*"."[0-9]+               return log('DECIMAL_NUMBER');
-[0-9]+                        return log('WHOLE_NUMBER');
-\b[Aa]" "[Tt][Ee][Mm][Pp][Oo] return log('A_TEMPO');
-\b[a-wyzA-WYZ][0-9a-zA-Z]*\b  return log(toSym(yytext));
-\b[a-zA-Z]{2}[0-9a-zA-Z]*\b   return log(toSym(yytext));
-"="                           return log('=');
-":"                           return log(':');
-"+"                           return log('+');
-"*"                           return log('*');
-"/"                           return log('/');
-"("                           return log ('(');
-")"                           return log(')');
-"//"                          return log('COMMENT');
-\n                            return log('EOL');
-<<EOF>>                       return log('EOF');
+[ \t]+                                    log();/* skip whitespace */
+"//"[^\n]*                                return log('COMMENT');
+"..."                                     return log('DOT_DOT_DOT');
+([0-9]*".")?[0-9]+" "*[Bb][Pp][Mm]        return log('EXACT_REV_BPM');
+([0-9]*".")?[0-9]+" "*"*"" "*[Bb][Pp][Mm] return log('REL_REV_BPM');
+[0-9]*"."[0-9]+                           return log('DECIMAL_NUMBER');
+[0-9]+                                    return log('WHOLE_NUMBER');
+\b[Aa]" "[Tt][Ee][Mm][Pp][Oo]             return log('A_TEMPO');
+\b[a-wyzA-WYZ][0-9a-zA-Z]*\b              return log(toSym(yytext));
+\b[a-zA-Z]{2}[0-9a-zA-Z]*\b               return log(toSym(yytext));
+"="                                       return log('=');
+":"                                       return log(':');
+"+"                                       return log('+');
+"*"                                       return log('*');
+"/"                                       return log('/');
+"("                                       return log ('(');
+")"                                       return log(')');
+"//"                                      return log('COMMENT');
+\n                                        return log('EOL');
+<<EOF>>                                   return log('EOF');
 
 
 /lex
@@ -150,6 +152,16 @@ bpm
         { 
           $$ = ["bpm", $2]; 
           collect([$$, $1, $2]);
+        }
+    | EXACT_REV_BPM
+        {
+          $$ = [ "bpm", ["exact", Number($1.description.split(/[ Bb]+/)[0]) ]];
+          collect([$$, $1]);
+        }
+    | REL_REV_BPM
+        {
+          $$ = [ "bpm", ["rel", Number($1.description.split(/[ Bb*]+/)[0]) ]];
+          collect([$$, $1]);
         }
     ;
 

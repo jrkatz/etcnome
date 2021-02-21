@@ -20,6 +20,20 @@ const makeOpt = (value) => {
   opt.text = value;
   return opt;
 };
+
+const clean = (text) => {
+  // replace all whitespace other than newlines with plain spaces.
+  // This is mostly to turn non-breaking spaces into regular spaces,
+  // but also strips tabs.
+  if (typeof text === "undefined") {
+    return undefined;
+  }
+  if (text === null) {
+    return null;
+  }
+  return text.replace(/[^\S\n\r]/g, " ");
+};
+
 class Editor extends EventTarget {
   constructor(interpreter) {
     super();
@@ -77,32 +91,90 @@ class Editor extends EventTarget {
     this.errorFld = errorFld;
 
     let inputTimeout = null;
-    fld.addEventListener("input", () => {
+
+    const debouncedApply = () => {
       if (inputTimeout) {
         clearTimeout(inputTimeout);
       }
       inputTimeout = setTimeout(() => this.apply(), 200);
+    };
+    fld.addEventListener("input", debouncedApply);
+    fld.addEventListener("blur", () => {
+      if (this.selection) {
+        // steal focus back to keep the selection visible - and to keep it from changing.
+        this.fld.focus();
+      }
     });
-    this.apply();
-    if (this.fld) {
-      this.fld.disabled = !this.enabled;
-    }
+
+    document.addEventListener("selectionchange", () => {
+      const selection = {
+        start: this.fld.selectionStart,
+        end: this.fld.selectionEnd,
+      };
+      const empty = selection.start === selection.end;
+      const hasExisting = !!this.selection;
+      const current =
+        (empty && !hasExisting) ||
+        (selection.start === this.selection?.start &&
+          selection.end === this.selection?.end);
+
+      if (current) {
+        // nothing to do.
+        return;
+      }
+
+      if (this.enabled) {
+        if (empty) {
+          if (hasExisting) {
+            this.selection = null;
+            debouncedApply();
+          }
+        } else {
+          this.selection = selection;
+          debouncedApply();
+        }
+      } else {
+        this.fld.setSelectionRange(
+          this.selection?.start || 0,
+          this.selection?.end || 0
+        );
+      }
+    });
   }
 
   setEnabled(enabled) {
+    if (this.enabled === enabled) {
+      return;
+    }
     this.enabled = enabled;
     if (this.fld) {
-      this.fld.disabled = !this.enabled;
+      this.fld.readOnly = !this.enabled;
     }
     if (this.exampleSelector) {
       this.exampleSelector.disabled = !this.enabled;
     }
   }
 
+  getRange() {
+    if (!this.selection) {
+      return null;
+    }
+    // The interpreter knows how to turn selected text into
+    // a range
+    const start = Math.min(this.selection.start, this.selection.end);
+    const end = Math.max(this.selection.start, this.selection.end);
+    const preselected = this.fld.value.substring(0, start);
+    const selected = this.fld.value.substring(start, end);
+    return this.interpreter.rangeFromSelection(preselected, selected);
+  }
+
   apply() {
-    const { track, errors } = this.parse(this.fld.value);
+    const { track, errors } = this.parse(clean(this.fld.value));
+    const range = this.getRange();
     this.track = track;
-    this.dispatchEvent(new CustomEvent("trackChange", { detail: track }));
+    this.dispatchEvent(
+      new CustomEvent("trackChange", { detail: { track, range } })
+    );
     this.errorFld.innerText = errors.join("\n");
   }
 }

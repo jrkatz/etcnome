@@ -56,7 +56,6 @@
 ":"                           return ':';
 "+"                           return '+';
 "*"                           return '*';
-[xX]                          return '*';
 "/"                           return '/'
 "("                           return '(';
 ")"                           return ')';

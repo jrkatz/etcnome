@@ -73,31 +73,31 @@ class Transport {
   controlsStopped() {
     this.playEnabled();
     this.stopDisabled();
-    this.editor.setEnabled(true);
+    this.editor.readOnly = false;
   }
 
   controlsPlaying() {
     this.pauseEnabled();
     this.stopEnabled();
-    this.editor.setEnabled(false);
+    this.editor.readOnly = true;
   }
 
   controlsPaused() {
     this.stopEnabled();
     this.playEnabled();
-    this.editor.setEnabled(false);
+    this.editor.readOnly = true;
   }
 
   controlsEmpty() {
     this.playDisabled();
     this.stopDisabled();
-    this.editor.setEnabled(true);
+    this.editor.readOnly = false;
   }
 
   controlsThinking() {
     this.playDisabled();
     this.stopDisabled();
-    this.editor.setEnabled(false);
+    this.editor.readOnly = true;
   }
 
   toState(state) {

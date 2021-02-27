@@ -19,32 +19,28 @@ import Player from "../../lib/player/player.js";
 import Exporter from "../../lib/export/exporter.js";
 import Transport from "./transport.js";
 import ExportCtrls from "./export.js";
-import Editor from "./editor.js";
 
 const bindControls = (
   playPauseBtn,
   stopBtn,
   repeatToggle,
   exportBtn,
-  editorFld,
-  editorErrors,
-  exampleSelector,
+  editor,
   parser
 ) => {
   const transport = new Transport();
   const player = new Player();
   const exporter = new Exporter();
   const exportCtrls = new ExportCtrls();
-  const editor = new Editor(new Interpreter(parser));
+  editor.interpreter = new Interpreter(parser);
 
-  editor.addEventListener("trackChange", (e) => {
+  editor.addEventListener("programChange", (e) => {
     player.setTrack(e.detail);
     exporter.setTrack(e.detail);
   });
 
   transport.init(playPauseBtn, stopBtn, repeatToggle, editor, player);
   exportCtrls.init(exportBtn, exporter);
-  editor.init(editorFld, editorErrors, exampleSelector);
 };
 
 if (window) {

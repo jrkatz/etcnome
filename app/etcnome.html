@@ -9,20 +9,13 @@
     />
     <script src="../lib/interpreter/parser.js"></script>
     <script src="./components/programEditor.js" type="module"></script>
+    <script src="./components/playerControls.js" type="module"></script>
   </head>
   <body>
     <h1>Etcnome</h1>
     <div>
-      <button name="play/pause" id="playPause"></button>
-      <button name="stop" id="stop"></button>
-      <input
-        type="checkbox"
-        id="repeatToggle"
-        name="repeatToggle"
-        value="repeat"
-      />
-      <label for="repeatToggle">Repeat</label>
-      <button name="export" id="export">Export .wav</button>
+      <player-controls id="transport"></player-controls>
+      <button id="export">Export .wav</button>
     </div>
     <program-editor id="editor" cols="45" rows="30"></program-editor>
     <script type="text/javascript">
@@ -35,9 +28,7 @@
     <script type="text/javascript">
       function onEtcnomeLoad() {
         window.etcnome.bindControls(
-          document.getElementById("playPause"),
-          document.getElementById("stop"),
-          document.getElementById("repeatToggle"),
+          document.getElementById("transport"),
           document.getElementById("export"),
           document.getElementById("editor"),
           window.parser

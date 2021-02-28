@@ -17,12 +17,10 @@
 import Interpreter from "../../lib/interpreter/interpreter.js";
 import Player from "../../lib/player/player.js";
 import Exporter from "../../lib/export/exporter.js";
-import ExportCtrls from "./export.js";
 
-const bindControls = (transport, exportBtn, editor, parser) => {
+const bindControls = (transport, exportControls, editor, parser) => {
   const player = new Player();
   const exporter = new Exporter();
-  const exportCtrls = new ExportCtrls();
   editor.interpreter = new Interpreter(parser);
 
   editor.addEventListener("programChange", (e) => {
@@ -31,7 +29,7 @@ const bindControls = (transport, exportBtn, editor, parser) => {
   });
 
   transport.player = player;
-  exportCtrls.init(exportBtn, exporter);
+  exportControls.exporter = exporter;
 };
 
 if (window) {

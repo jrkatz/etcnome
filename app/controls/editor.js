@@ -21,32 +21,17 @@ const makeOpt = (value) => {
   return opt;
 };
 
-const clean = (text) => {
-  // replace all whitespace other than newlines with plain spaces.
-  // This is mostly to turn non-breaking spaces into regular spaces,
-  // but also strips tabs.
-  if (typeof text === "undefined") {
-    return undefined;
-  }
-  if (text === null) {
-    return null;
-  }
-  return text.replace(/[^\S\n\r]/g, " ");
-};
-
 class Editor extends EventTarget {
   constructor(interpreter) {
     super();
-    this.track = null;
-    this.errors = [];
-    this.locks = 0;
     this.fld = null;
     this.errorFld = null;
     this.exampleSelector = null;
     this.interpreter = interpreter;
   }
 
-  parse(text) {
+  parse() {
+    const text = this.fld.value;
     if (!text) {
       return {
         errors: [],
@@ -55,7 +40,7 @@ class Editor extends EventTarget {
     }
     let track = null;
     try {
-      track = this.interpreter.interpret(text);
+      track = this.interpreter.interpret(text, this.selection);
       return { track, errors: [] };
     } catch (e) {
       return {
@@ -155,26 +140,9 @@ class Editor extends EventTarget {
     }
   }
 
-  getRange() {
-    if (!this.selection) {
-      return null;
-    }
-    // The interpreter knows how to turn selected text into
-    // a range
-    const start = Math.min(this.selection.start, this.selection.end);
-    const end = Math.max(this.selection.start, this.selection.end);
-    const preselected = this.fld.value.substring(0, start);
-    const selected = this.fld.value.substring(start, end);
-    return this.interpreter.rangeFromSelection(preselected, selected);
-  }
-
   apply() {
-    const { track, errors } = this.parse(clean(this.fld.value));
-    const range = this.getRange();
-    this.track = track;
-    this.dispatchEvent(
-      new CustomEvent("trackChange", { detail: { track, range } })
-    );
+    const { track, errors } = this.parse();
+    this.dispatchEvent(new CustomEvent("trackChange", { detail: track }));
     this.errorFld.innerText = errors.join("\n");
   }
 }

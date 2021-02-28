@@ -10,20 +10,22 @@
     <script src="../lib/interpreter/parser.js"></script>
     <script src="./components/programEditor.js" type="module"></script>
     <script src="./components/playerControls.js" type="module"></script>
-  </head>
-  <body>
-    <h1>Etcnome</h1>
-    <div>
-      <player-controls id="transport"></player-controls>
-      <button id="export">Export .wav</button>
-    </div>
-    <program-editor id="editor" cols="45" rows="30"></program-editor>
+    <script src="./components/exportControls.js" type="module"></script>
+
     <script type="text/javascript">
       //polyfills for audio contexts for safari:
       window.OfflineAudioContext =
         window.OfflineAudioContext || window.webkitOfflineAudioContext;
       window.AudioContext = window.AudioContext || window.webkitAudioContext;
     </script>
+  </head>
+  <body>
+    <h1>Etcnome</h1>
+    <div>
+      <player-controls id="transport"></player-controls>
+      <export-controls id="export"></export-controls>
+    </div>
+    <program-editor id="editor" cols="45" rows="30"></program-editor>
     <script src="./controls/controls.js" type="module"></script>
     <script type="text/javascript">
       function onEtcnomeLoad() {

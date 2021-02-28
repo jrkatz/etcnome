@@ -8,9 +8,7 @@
       content="script-src 'self' 'unsafe-inline';"
     />
     <script src="../lib/interpreter/parser.js"></script>
-    <script src="./components/programEditor.js" type="module"></script>
-    <script src="./components/playerControls.js" type="module"></script>
-    <script src="./components/exportControls.js" type="module"></script>
+    <script src="./components/etcnomeHome.js" type="module"></script>
 
     <script type="text/javascript">
       //polyfills for audio contexts for safari:
@@ -21,27 +19,6 @@
   </head>
   <body>
     <h1>Etcnome</h1>
-    <div>
-      <player-controls id="transport"></player-controls>
-      <export-controls id="export"></export-controls>
-    </div>
-    <program-editor id="editor" cols="45" rows="30"></program-editor>
-    <script src="./controls/controls.js" type="module"></script>
-    <script type="text/javascript">
-      function onEtcnomeLoad() {
-        window.etcnome.bindControls(
-          document.getElementById("transport"),
-          document.getElementById("export"),
-          document.getElementById("editor"),
-          window.parser
-        );
-      }
-
-      if (typeof window.etcnome === "undefined") {
-        window.etcnome = [onEtcnomeLoad];
-      } else if (!Array.isArray(window.etcnome)) {
-        onEtcnomeLoad();
-      }
-    </script>
+    <etcnome-home></etcnome-home>
   </body>
 </html>

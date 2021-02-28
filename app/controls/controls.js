@@ -17,18 +17,9 @@
 import Interpreter from "../../lib/interpreter/interpreter.js";
 import Player from "../../lib/player/player.js";
 import Exporter from "../../lib/export/exporter.js";
-import Transport from "./transport.js";
 import ExportCtrls from "./export.js";
 
-const bindControls = (
-  playPauseBtn,
-  stopBtn,
-  repeatToggle,
-  exportBtn,
-  editor,
-  parser
-) => {
-  const transport = new Transport();
+const bindControls = (transport, exportBtn, editor, parser) => {
   const player = new Player();
   const exporter = new Exporter();
   const exportCtrls = new ExportCtrls();
@@ -39,7 +30,7 @@ const bindControls = (
     exporter.setTrack(e.detail);
   });
 
-  transport.init(playPauseBtn, stopBtn, repeatToggle, editor, player);
+  transport.player = player;
   exportCtrls.init(exportBtn, exporter);
 };
 

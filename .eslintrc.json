@@ -19,6 +19,7 @@
       "LabeledStatement",
       "WithStatement"
     ],
+    "no-param-reassign": ["error", { "props": false }],
     "no-console": ["error", { "allow": ["error"] }],
     "max-classes-per-file": "off",
     "import/extensions": [

@@ -22,7 +22,7 @@
 %{
   //put some symbols in for the lexer
   //these are our reserved words.
-  sym = new Map([
+  const sym = new Map([
     ['BPM', 'BPM'],
     ['SWING', 'SWING'],
     ['OFF', 'OFF'],
@@ -42,11 +42,11 @@
     ['RIT', 'ADJUST_BPM'],
   ]);
 
-  toSym = (text) => sym.has(text.toUpperCase()) ? sym.get(text.toUpperCase()) : 'IDENTIFIER';
+  const toSym = (text) => sym.has(text.toUpperCase()) ? sym.get(text.toUpperCase()) : 'IDENTIFIER';
   if (typeof yy.lmap === 'undefined') {
     yy.lmap = new Map();
   }
-  collect = (args) => {
+  yy.collect = (args) => {
     yy.lmap.set(
       args[0],
       args.slice(1).map((token) => yy.lmap.get(token))
@@ -58,18 +58,17 @@
           }))
         );
   };
-  log = (x) => { 
+  const log = (x) => { 
     const obj = JSON.parse(JSON.stringify(yylloc));
     //yylloc is not zero indexed for lines, but we want
     //zero indexed values.
     obj.first_line -= 1;
     obj.last_line -= 1;
-    s = Symbol(yytext);
+    const s = Symbol(yytext);
     yytext = s;
     yy.lmap.set(yytext, obj);
     return x;
   };
-
 %}
 
 %%
@@ -99,18 +98,7 @@
 
 %start track
 %{
-  const getCircularReplacer = () => {
-    const seen = new WeakSet();
-    return (key, value) => {
-      if (typeof value === "object" && value !== null) {
-        if (seen.has(value)) {
-          return;
-        }
-        seen.add(value);
-      }
-      return value;
-    };
-  }
+  //inject code here if needed
 %}
 
 %% /* language grammar */
@@ -130,14 +118,14 @@ whole_number
     : WHOLE_NUMBER
       {
         $$ = Number($1.description);
-        collect([$$, $1]);
+        yy.collect([$$, $1]);
       }
     ;
 decimal_number
     : DECIMAL_NUMBER
       {
         $$ = Number($1.description);
-        collect([$$, $1]);
+        yy.collect([$$, $1]);
       }
     ;
 
@@ -151,17 +139,17 @@ bpm
     : BPM exact_or_rel_num
         { 
           $$ = ["bpm", $2]; 
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
         }
     | EXACT_REV_BPM
         {
           $$ = [ "bpm", ["exact", Number($1.description.split(/[ Bb]+/)[0]) ]];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     | REL_REV_BPM
         {
           $$ = [ "bpm", ["rel", Number($1.description.split(/[ Bb*]+/)[0]) ]];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
 
@@ -169,12 +157,12 @@ adjust_bpm
     : ADJUST_BPM exact_or_rel_num number
         { 
           $$ = ["adjust_bpm", $2, $3];
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     | ADJUST_BPM exact_or_rel_num number number
         {
           $$ = ["adjust_bpm", $2, $3, $4];
-          collect([$$, $1, $2, $3, $4]);
+          yy.collect([$$, $1, $2, $3, $4]);
         }
 ;
 
@@ -183,7 +171,7 @@ a_tempo
     : A_TEMPO
         { 
           $$ = ["a_tempo"];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
 
@@ -191,13 +179,13 @@ number_list
     : number 
         {
           $$ = [$1];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     | number_list number
         {
           $1.push($2);
           $$=$1;
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
 	      }
     ;
 
@@ -205,22 +193,22 @@ swing
     : SWING number_list
         {
           $$ = ["swing", {ratios: $2}];
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
         }
     | SWING number_list DOT_DOT_DOT whole_number
         {
           $$ = ["swing", {ratios: $2, phrase: $4}];
-          collect([$$, $1, $2, $3, $4]);
+          yy.collect([$$, $1, $2, $3, $4]);
         }
     | SWING OFF
         {
           $$ = ["swing", null];
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
         }
     | STRAIGHT
         {
           $$ = ["swing", null];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
 
@@ -238,13 +226,13 @@ instructions
     : instruction
         {
           $$ = [ "instrs", $1 ];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     | instructions eol instruction
         { 
           $1.push($3);
           $$ = $1;
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     ;
 
@@ -252,7 +240,7 @@ assign
     : IDENTIFIER '=' section
         {
           $$ = ['assign', $1.description, $3]; 
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     ;
 
@@ -260,7 +248,7 @@ play
     : EXACTLY IDENTIFIER
         {
           $$ = ['play', $2.description];
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
         }
     ;
 
@@ -268,7 +256,7 @@ reinterpret
     : IDENTIFIER
         {
           $$ = ['reinterpret', $1.description];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
 
@@ -285,7 +273,7 @@ instruction
     : instruction_noloc
         {
           $$ = [$1, yy.lmap.get($1)];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
 
@@ -293,13 +281,13 @@ phrase_list
     : whole_number
         {
           $$ = [$1]; 
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     | phrase_list '+' whole_number
         {
           $1.push($3);
           $$=$1;
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     ;
 
@@ -307,13 +295,13 @@ polyrhythm_list
     : phrase_list
       { 
         $$ = [$1];
-        collect([$$, $1]);
+        yy.collect([$$, $1]);
       }
     | polyrhythm_list ':' phrase_list
         {
           $1.push($3);
           $$ = $1;
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     ;
 
@@ -325,7 +313,7 @@ measure
     : polyrhythm_list '/' measure_denom
         {
           $$ = ["Measure", $1, $3]; 
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     ;
 
@@ -335,17 +323,17 @@ intensity
     : HIGH
         {
           $$ = 'HIGH';
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     | MID
         {
           $$ = 'MID';
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     | LOW
         { 
           $$ = 'LOW';
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
 
@@ -353,12 +341,12 @@ exact_or_rel_num
     : '*' number
         {
           $$ = ['rel', $2]; 
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
         }
     | number
         {
           $$ = ['exact', $1];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
 
@@ -366,7 +354,7 @@ beat
     : intensity exact_or_rel_num
         {
           $$ = [$1, $2];
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
         }
     ;
 
@@ -374,13 +362,13 @@ beat_list
     : beat
         {
           $$ = [$1];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     | beat_list beat
         { 
           $1.push($2);
           $$=$1;
-          collect([$$, $1, $2]);
+          yy.collect([$$, $1, $2]);
         }
     ;
 
@@ -388,7 +376,7 @@ beats
    : BEATS beat_list
        {
          $$ = ['BeatList', $2]; 
-         collect([$$, $1, $2]);
+         yy.collect([$$, $1, $2]);
        }
    ;
 
@@ -400,28 +388,29 @@ section_noloc
     | '(' instructions ')'
         {
           $$ = $2; 
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     | '(' eol instructions ')'
         {
           $$ = $3; 
-          collect([$$, $1, $2, $3, $4]);
+          yy.collect([$$, $1, $2, $3, $4]);
         }
     | '(' eol instructions eol ')'
         {
           $$ = $3;
-          collect([$$, $1, $2, $3, $4, $5]);
+          yy.collect([$$, $1, $2, $3, $4, $5]);
         }
     | section '*' whole_number
         { 
           $$ = ["RepeatingSection", $1, $3];
-          collect([$$, $1, $2, $3]);
+          yy.collect([$$, $1, $2, $3]);
         }
     ;
 section
     : section_noloc
         {
           $$ = [$1, yy.lmap.get($1)];
-          collect([$$, $1]);
+          yy.collect([$$, $1]);
         }
     ;
+

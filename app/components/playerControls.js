@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import "./playerButton.js";
+import "./labeledSlider.js";
 import { State as PlayerState } from "../../lib/player/player.js";
 
 const PLAYER = new WeakMap();
@@ -64,6 +65,7 @@ class PlayerControls extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+    this.updateCallback = () => update(this);
 
     this.playButton = document.createElement("player-button");
     this.playButton.label = "play";
@@ -85,11 +87,25 @@ class PlayerControls extends HTMLElement {
     this.repeatCheckbox.type = "checkbox";
     repeatLabel.appendChild(this.repeatCheckbox);
 
+    this.speedControl = document.createElement("labeled-slider");
+    this.speedControl.name = "speed";
+    this.speedControl.min = -2;
+    this.speedControl.max = 2;
+    this.speedControl.step = 0.1;
+    this.speedControl.value = 1;
+    this.speedControl.default = 1;
+    this.speedControl.transform = (x) => 2 ** x;
+    this.speedControl.reverseTransform = (x) => Math.log2(x);
+
+    this.speedControl.addEventListener("input", () =>
+      this.player?.setSpeed(this.speedControl.value)
+    );
+
     this.shadowRoot.appendChild(this.firstButton);
     this.shadowRoot.appendChild(this.stopButton);
+    this.shadowRoot.appendChild(this.speedControl);
     this.shadowRoot.appendChild(repeatLabel);
 
-    this.updateCallback = () => update(this);
     update(this);
 
     this.playButton.addEventListener("click", () => this.player?.play());
@@ -108,6 +124,7 @@ class PlayerControls extends HTMLElement {
     this.player?.removeEventListener("stateChange", this.updateCallback);
     PLAYER.set(this, player);
     this.player?.addEventListener("stateChange", this.updateCallback);
+    this.player?.setSpeed(this.speedControl?.value || 1);
     update(this);
   }
 }

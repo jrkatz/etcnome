@@ -18,6 +18,12 @@
 
 import "./labeledSelect.js";
 
+const enforceMaxErrorSize = (editor) => {
+  const { textarea, exampleSelector, errorDiv } = editor;
+  const width = Math.max(textarea.offsetWidth, exampleSelector.offsetWidth);
+  errorDiv.style.maxWidth = `${width}px`;
+};
+
 const parse = (editor) => {
   const { code, selection } = editor;
   if (!code) {
@@ -131,6 +137,7 @@ class ProgramEditor extends HTMLElement {
     // that out for us. Turns out the margin isn't exactly needed anyhow.
     const areaResizeObserver = new ResizeObserver(() => {
       this.textarea.style.margin = 0;
+      enforceMaxErrorSize(this);
     });
     areaResizeObserver.observe(this.textarea);
     this.textarea.addEventListener("input", () => {
@@ -188,6 +195,7 @@ class ProgramEditor extends HTMLElement {
     const errorsCopy = errors ? [...errors] : [];
     ERRORS.set(this, errorsCopy);
 
+    enforceMaxErrorSize(this);
     this.errorDiv.innerText = errorsCopy?.join("\n") || "";
   }
 

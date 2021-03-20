@@ -23,8 +23,16 @@ const validate = (slider) => {
   if (!slider.text.readOnly && !slider.text.disabled) {
     const reversedVal = slider.reverseTransform
       ? slider.reverseTransform(slider.text.value)
-      : slider.text.value;
-    if (reversedVal < slider.min || reversedVal > slider.max) {
+      : Number(slider.text.value);
+    if (Number.isNaN(reversedVal)) {
+      // looks like we're out of bounds. Take a guess about which way we went out of bounds
+      const boundaryVal =
+        slider.text.value < slider.value ? slider.min : slider.max;
+      slider.text.value = slider.transform
+        ? slider.transform(boundaryVal)
+        : boundaryVal;
+      slider.slider.value = boundaryVal;
+    } else if (reversedVal < slider.min || reversedVal > slider.max) {
       const constrainedVal = Math.max(
         slider.min,
         Math.min(slider.max, reversedVal)

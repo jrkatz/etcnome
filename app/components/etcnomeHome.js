@@ -28,20 +28,18 @@ class EtcnomeHome extends HTMLElement {
     this.attachShadow({ mode: "open" });
 
     const player = new Player();
-    this.playerControls = document.createElement("player-controls");
-    this.playerControls.player = player;
+    const playerControls = document.createElement("player-controls");
+    playerControls.player = player;
+    playerControls.id = "controls";
 
     const exporter = new Exporter();
-    this.exportControls = document.createElement("export-controls");
-    this.exportControls.exporter = exporter;
+    const exportControls = document.createElement("export-controls");
+    exportControls.exporter = exporter;
 
-    const controlDiv = document.createElement("div");
-    controlDiv.append(this.playerControls, this.exportControls);
-
-    this.programEditor = document.createElement("program-editor");
-    this.programEditor.rows = 30;
-    this.programEditor.cols = 45;
-    this.programEditor.addEventListener("programChange", ({ detail }) => {
+    const programEditor = document.createElement("program-editor");
+    programEditor.rows = 30;
+    programEditor.cols = 45;
+    programEditor.addEventListener("programChange", ({ detail }) => {
       player.setTrack(detail);
       exporter.setTrack(detail);
     });
@@ -50,16 +48,26 @@ class EtcnomeHome extends HTMLElement {
       switch (player.state) {
         case PlayerState.playing:
         case PlayerState.paused:
-          this.programEditor.readOnly = true;
+          programEditor.readOnly = true;
           break;
         default:
-          this.programEditor.readOnly = false;
+          programEditor.readOnly = false;
       }
     });
 
-    this.programEditor.interpreter = new Interpreter(window.parser);
+    programEditor.interpreter = new Interpreter(window.parser);
 
-    this.shadowRoot.append(controlDiv, this.programEditor);
+    const controlDiv = document.createElement("div");
+    controlDiv.append(playerControls, exportControls);
+    this.shadowRoot.append(programEditor, controlDiv);
+
+    const style = document.createElement("style");
+    style.innerText = `
+      :host { display: flex; flex-direction: row; flex-wrap: wrap; }
+      #controls { display: block };
+
+    `;
+    this.shadowRoot.appendChild(style);
   }
 }
 

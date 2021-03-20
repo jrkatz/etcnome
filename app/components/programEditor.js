@@ -113,6 +113,7 @@ class ProgramEditor extends HTMLElement {
     this.exampleSelector.setAttribute("label", "Load example");
     this.errorDiv = document.createElement("div");
 
+    this.shadowRoot.append(this.exampleSelector, this.textarea, this.errorDiv);
     this.shadowRoot.appendChild(this.textarea);
     this.shadowRoot.append(this.exampleSelector);
     this.shadowRoot.append(this.errorDiv);
@@ -124,6 +125,14 @@ class ProgramEditor extends HTMLElement {
         this.code = code;
       }
     });
+
+    // Chrome (at least) adds a margin when a resizable element shrinks to be smaller
+    // than its container. It doesn't remove it as the element expands. This sorts
+    // that out for us. Turns out the margin isn't exactly needed anyhow.
+    const areaResizeObserver = new ResizeObserver(() => {
+      this.textarea.style.margin = 0;
+    });
+    areaResizeObserver.observe(this.textarea);
     this.textarea.addEventListener("input", () => debouncedApply(this));
     this.textarea.addEventListener("blur", () => {
       if (this.selection) {

@@ -101,10 +101,12 @@ class PlayerControls extends HTMLElement {
       this.player?.setSpeed(this.speedControl.value)
     );
 
-    this.shadowRoot.appendChild(this.firstButton);
-    this.shadowRoot.appendChild(this.stopButton);
-    this.shadowRoot.appendChild(this.speedControl);
-    this.shadowRoot.appendChild(repeatLabel);
+    this.shadowRoot.append(
+      this.firstButton,
+      this.stopButton,
+      repeatLabel,
+      this.speedControl
+    );
 
     update(this);
 

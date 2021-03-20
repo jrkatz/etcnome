@@ -133,7 +133,10 @@ class ProgramEditor extends HTMLElement {
       this.textarea.style.margin = 0;
     });
     areaResizeObserver.observe(this.textarea);
-    this.textarea.addEventListener("input", () => debouncedApply(this));
+    this.textarea.addEventListener("input", () => {
+      this.exampleSelector.value = "";
+      debouncedApply(this);
+    });
     this.textarea.addEventListener("blur", () => {
       if (this.selection) {
         // steal focus back to keep the selection visible
@@ -210,7 +213,10 @@ class ProgramEditor extends HTMLElement {
     INTERPRETER.set(this, interpreter);
 
     this.textarea.placeholder = interpreter?.placeholderTxt || "";
-    this.exampleSelector.options = Object.keys(interpreter?.examples || {});
+    this.exampleSelector.options = [
+      "",
+      ...Object.keys(interpreter?.examples || {}),
+    ];
     if (interpreter.demoTxt && !this.textarea.value) {
       this.textarea.value = interpreter.demoTxt;
     }
